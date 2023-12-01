@@ -57,20 +57,13 @@ data class NumConverter(val nums: List<String>) {
         )
         val reverserdNumberAsString = numberAsString.mapKeys { (k, _) -> k.reversed() }
 
-        fun replaceSpelledNumbers(text: String): String {
+        fun replaceSpelledNumbers(text: String, numbers: Map<String, String>): String {
             if (text.isEmpty()) return ""
-            val rf = replaceSpelledNumbersAtStart(numberAsString, text)
-            val f = rf.first().toString()
-            val r = replaceSpelledNumbers(rf.substring(1))
-            return f + r
-        }
-
-        fun reversedReplaceSpelledNumbers(text: String): String {
-            if (text.isEmpty()) return ""
-            val rf = replaceSpelledNumbersAtStart(reverserdNumberAsString, text)
-            val f = rf.first().toString()
-            val r = reversedReplaceSpelledNumbers(rf.substring(1))
-            return f + r
+            val rf = replaceSpelledNumbersAtStart(numbers, text)
+            val f = rf.first()
+            if (f.isDigit()) return f.toString()
+            val r = replaceSpelledNumbers(rf.substring(1), numbers)
+            return f.toString() + r
         }
 
         fun replaceSpelledNumbersAtStart(numbers: Map<String, String>, text: String): String {
@@ -85,8 +78,8 @@ data class NumConverter(val nums: List<String>) {
 
         fun parse(input: List<String>): List<String> =
             input.map { line ->
-                val res = replaceSpelledNumbers(line).filter { it.isDigit() }.first().toString()
-                val revRes = reversedReplaceSpelledNumbers(line.reversed()).filter { it.isDigit() }.first().toString()
+                val res = replaceSpelledNumbers(line, numberAsString).filter { it.isDigit() }.first().toString()
+                val revRes = replaceSpelledNumbers(line.reversed(), reverserdNumberAsString).filter { it.isDigit() }.first().toString()
                 res + revRes
             }
     }
