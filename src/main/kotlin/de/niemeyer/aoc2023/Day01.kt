@@ -62,8 +62,7 @@ data class NumConverter(val nums: List<String>) {
             val rf = replaceSpelledNumbersAtStart(numbers, text)
             val f = rf.first()
             if (f.isDigit()) return f.toString()
-            val r = replaceSpelledNumbers(rf.substring(1), numbers)
-            return f.toString() + r
+            return replaceSpelledNumbers(rf.substring(1), numbers)
         }
 
         fun replaceSpelledNumbersAtStart(numbers: Map<String, String>, text: String): String {
