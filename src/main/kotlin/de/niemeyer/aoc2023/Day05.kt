@@ -9,12 +9,17 @@ import de.niemeyer.aoc.utils.Resources.resourceAsText
 import de.niemeyer.aoc.utils.getClassName
 
 fun main() {
-    fun part1(input: String): Long {
+    fun seedsAndResources(input: String): Pair<List<Long>, List<Resource>> {
         val rules = input.split("\n\n").map { it.trim() }
         val seeds = rules.first().substringAfter(": ").split(' ').map { it.toLong() }
         val resources = rules.drop(1).map {
             Resource.ofString(it)
         }
+        return seeds to resources
+    }
+
+    fun part1(input: String): Long {
+        val (seeds, resources) = seedsAndResources(input)
         val solutions = seeds.map { seed ->
             resources.fold(seed) { acc, resource ->
                 resource.convert(acc)
@@ -24,11 +29,7 @@ fun main() {
     }
 
     fun part2(input: String): Long {
-        val rules = input.split("\n\n").map { it.trim() }
-        val seeds = rules.first().substringAfter(": ").split(' ').map { it.toLong() }
-        val resources = rules.drop(1).map {
-            Resource.ofString(it)
-        }
+        val (seeds, resources) = seedsAndResources(input)
 
         var minFound = Long.MAX_VALUE
         seeds.chunked(2)
@@ -39,8 +40,6 @@ fun main() {
                     }
                     if (solution < minFound) {
                         minFound = solution
-                    } else {
-                        null
                     }
                 }
             }
@@ -53,6 +52,7 @@ fun main() {
 
     check(part1(testInput) == 35L)
     val puzzleResultPart1 = part1(puzzleInput)
+    println(puzzleResultPart1)
     check(puzzleResultPart1 == 173_706_076L)
 
     check(part2(testInput) == 46L)
@@ -61,31 +61,14 @@ fun main() {
     check(puzzleResultPart2 == 11_611_182L)
 }
 
-enum class ISLAND_RESOURCE {
-    SEED,
-    SOIL,
-    FERTILIZER,
-    WATER,
-    LIGHT,
-    TEMPERATURE,
-    HUMIDITY,
-    LOCATION
-}
-
 data class ResourceConversion(val sourceRangeStart: Long, val destinationRangeStart: Long, val rangeLength: Long)
 
 class Resource(
-    val source: ISLAND_RESOURCE,
-    val destination: ISLAND_RESOURCE,
     val conversions: List<ResourceConversion>
 ) {
     fun convert(startPoint: Long): Long {
         val x = conversions.mapNotNull { conversion ->
-            if (startPoint in LongRange(
-                    conversion.sourceRangeStart,
-                    conversion.sourceRangeStart + conversion.rangeLength - 1
-                )
-            ) {
+            if (startPoint in conversion.sourceRangeStart..<conversion.sourceRangeStart + conversion.rangeLength) {
                 startPoint - conversion.sourceRangeStart + conversion.destinationRangeStart
             } else {
                 null
@@ -105,8 +88,6 @@ class Resource(
                 ResourceConversion(sourceStart, destinationStart, rangeLength)
             }
             return Resource(
-                enumValueOf<ISLAND_RESOURCE>(sourceText.uppercase()),
-                enumValueOf<ISLAND_RESOURCE>(destinationText.uppercase()),
                 conversionList
             )
         }
