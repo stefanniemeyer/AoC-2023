@@ -11,7 +11,7 @@ import de.niemeyer.aoc.utils.getClassName
 fun main() {
     fun seedsAndResources(input: String): Pair<List<Long>, List<Resource>> {
         val rules = input.split("\n\n").map { it.trim() }
-        val seeds = rules.first().substringAfter(": ").split(' ').map { it.toLong() }
+        val seeds = rules.first().substringAfter(":").split(' ').mapNotNull { it.toLongOrNull() }
         val resources = rules.drop(1).map {
             Resource.ofString(it)
         }
@@ -50,37 +50,45 @@ fun main() {
     val testInput = resourceAsText(fileName = "${name}_test.txt")
     val puzzleInput = resourceAsText(fileName = "${name}.txt")
 
+
     check(part1(testInput) == 35L)
+    val startTime1 = System.currentTimeMillis()
     val puzzleResultPart1 = part1(puzzleInput)
+    val endTime1 = System.currentTimeMillis()
+    val duration1 = endTime1 - startTime1
     println(puzzleResultPart1)
+    println("Runtime for part 1: $duration1 ms")
     check(puzzleResultPart1 == 173_706_076L)
 
     check(part2(testInput) == 46L)
+    val startTime2 = System.currentTimeMillis()
     val puzzleResultPart2 = part2(puzzleInput)
+    val endTime2 = System.currentTimeMillis()
+    val duration2 = endTime2 - startTime2
     println(puzzleResultPart2)
+    println("Runtime for part 2: $duration2 ms")
     check(puzzleResultPart2 == 11_611_182L)
 }
 
 data class ResourceConversion(val sourceRangeStart: Long, val destinationRangeStart: Long, val rangeLength: Long)
 
 class Resource(
-    val conversions: List<ResourceConversion>
+    private val conversions: List<ResourceConversion>
 ) {
     fun convert(startPoint: Long): Long {
-        val x = conversions.mapNotNull { conversion ->
+        val x = conversions.firstNotNullOfOrNull { conversion ->
             if (startPoint in conversion.sourceRangeStart..<conversion.sourceRangeStart + conversion.rangeLength) {
                 startPoint - conversion.sourceRangeStart + conversion.destinationRangeStart
             } else {
                 null
             }
-        }.firstOrNull()
-        return x ?: startPoint
+        } ?: startPoint
+        return x
     }
 
     companion object {
         fun ofString(input: String): Resource {
             val lines = input.lines()
-            val (sourceText, _, destinationText) = lines.first().split('-', ' ')
             val conversionList = lines.drop(1).map { line ->
                 val (destinationStart, sourceStart, rangeLength) = line.split(' ').map { num ->
                     num.toLong()
