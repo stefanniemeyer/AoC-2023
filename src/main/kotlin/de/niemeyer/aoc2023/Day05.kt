@@ -6,7 +6,12 @@
 package de.niemeyer.aoc2023
 
 import de.niemeyer.aoc.utils.Resources.resourceAsText
+import de.niemeyer.aoc.utils.executeAndCheck
 import de.niemeyer.aoc.utils.getClassName
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 
 fun main() {
     fun seedsAndResources(input: String): Pair<List<Long>, List<Resource>> {
@@ -31,43 +36,41 @@ fun main() {
     fun part2(input: String): Long {
         val (seeds, resources) = seedsAndResources(input)
 
-        var minFound = Long.MAX_VALUE
-        seeds.chunked(2)
-            .forEach { seedChunk ->
-                (seedChunk.first() until seedChunk.first() + seedChunk.last()).forEach { seed ->
-                    val solution = resources.fold(seed) { acc, resource ->
-                        resource.convert(acc)
+        val solution: Long
+        runBlocking(Dispatchers.Default) {
+            val all = seeds.chunked(2)
+                .map { seedChunk ->
+                    async {
+                        var minFound = Long.MAX_VALUE
+                        (seedChunk.first() until seedChunk.first() + seedChunk.last()).forEach { seed ->
+                            val sol = resources.fold(seed) { acc, resource ->
+                                resource.convert(acc)
+                            }
+                            if (sol < minFound) {
+                                minFound = sol
+                            }
+                        }
+                        minFound
                     }
-                    if (solution < minFound) {
-                        minFound = solution
-                    }
-                }
-            }
-        return minFound
+                }.awaitAll()
+            solution = all.min()
+        }
+        return solution
     }
 
     val name = getClassName()
     val testInput = resourceAsText(fileName = "${name}_test.txt")
     val puzzleInput = resourceAsText(fileName = "${name}.txt")
 
-
     check(part1(testInput) == 35L)
-    val startTime1 = System.currentTimeMillis()
-    val puzzleResultPart1 = part1(puzzleInput)
-    val endTime1 = System.currentTimeMillis()
-    val duration1 = endTime1 - startTime1
-    println(puzzleResultPart1)
-    println("Runtime for part 1: $duration1 ms")
-    check(puzzleResultPart1 == 173_706_076L)
+    executeAndCheck(1, 173_706_076L) {
+        part1(puzzleInput)
+    }
 
     check(part2(testInput) == 46L)
-    val startTime2 = System.currentTimeMillis()
-    val puzzleResultPart2 = part2(puzzleInput)
-    val endTime2 = System.currentTimeMillis()
-    val duration2 = endTime2 - startTime2
-    println(puzzleResultPart2)
-    println("Runtime for part 2: $duration2 ms")
-    check(puzzleResultPart2 == 11_611_182L)
+    executeAndCheck(2, 11_611_182L) {
+        part2(puzzleInput)
+    }
 }
 
 data class ResourceConversion(val sourceRangeStart: Long, val destinationRangeStart: Long, val rangeLength: Long)

@@ -5,6 +5,8 @@ package de.niemeyer.aoc.utils
 import java.math.BigInteger
 import java.security.MessageDigest
 import kotlin.math.absoluteValue
+import kotlin.time.Duration
+import kotlin.time.measureTimedValue
 
 /**
  * Converts string to md5 hash.
@@ -38,3 +40,19 @@ fun Int.lcm(other: Int) =
         (this * other).absoluteValue / this.gcd(other)
     }
 
+fun formatDuration(duration: Duration): String {
+    val minutes = duration.inWholeMinutes
+    val seconds = duration.inWholeSeconds % 60
+    val milliseconds = duration.inWholeMilliseconds % 1_000
+    return "${duration.inWholeMilliseconds}ms = " + listOf(minutes, seconds, milliseconds).zip(listOf("min", "s", "ms"))
+        .mapNotNull { (time, unit) ->
+            ("${time}${unit}").takeIf { time > 0L }
+        }.joinToString(" ").ifEmpty { "too fast to measure" }
+}
+
+fun <T> executeAndCheck(part: Int, expected: T, block: () -> T) {
+    val result = measureTimedValue { block() }
+    check(result.value == expected)
+    println(result.value)
+    println("Part ${part} took: ${formatDuration(result.duration)}")
+}

@@ -6,6 +6,7 @@
 package de.niemeyer.aoc2023
 
 import de.niemeyer.aoc.utils.Resources.resourceAsList
+import de.niemeyer.aoc.utils.executeAndCheck
 import de.niemeyer.aoc.utils.getClassName
 
 fun main() {
@@ -34,12 +35,14 @@ fun main() {
     val puzzleInput = readInput(fileName = "${name}.txt")
 
     check(part1(testInput) == 142)
-    println(part1(puzzleInput))
-    check(part1(puzzleInput) == 54_601)
+    executeAndCheck(1, 54_601) {
+        part1(puzzleInput)
+    }
 
     check(part2(testInput2) == 281)
-    println(part2(puzzleInput))
-    check(part2(puzzleInput) == 54_078)
+    executeAndCheck(2, 54_078) {
+        part2(puzzleInput)
+    }
 }
 
 data class NumConverter(val nums: List<String>) {

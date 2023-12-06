@@ -7,6 +7,7 @@ package de.niemeyer.aoc2023
 
 import de.niemeyer.aoc.grid.GridCellScreen
 import de.niemeyer.aoc.utils.Resources.resourceAsList
+import de.niemeyer.aoc.utils.executeAndCheck
 import de.niemeyer.aoc.utils.getClassName
 
 fun main() {
@@ -63,14 +64,15 @@ fun main() {
     val puzzleInput = resourceAsList(fileName = "${name}.txt")
 
     check(part1(testInput) == 4_361)
-    val puzzleResultPart1 = part1(puzzleInput)
-    println(puzzleResultPart1)
-    check(puzzleResultPart1 == 527_369)
+    executeAndCheck(1, 527_369) {
+        part1(puzzleInput)
+    }
 
     check(part2(testInput) == 467_835L)
-    val puzzleResultPart2 = part2(puzzleInput)
-    println(puzzleResultPart2)
-    check(puzzleResultPart2 == 73_074_886L)
+    executeAndCheck(2, 73_074_886L) {
+        part2(puzzleInput)
+    }
+
 }
 
 data class RawSchematic(val rawSchematic: Map<GridCellScreen, Char>) {
@@ -104,7 +106,6 @@ data class Engine(val engine: List<PartNumber>) {
             for (row in schema.rowMin..schema.rowMax) {
                 var collecting = false
                 var digits = ""
-                var number = 0
                 val fields = mutableSetOf<GridCellScreen>()
                 for (column in schema.columnMin..schema.columnMax) {
                     val c = schema.rawSchematic.getOrDefault(GridCellScreen(row, column), '.')

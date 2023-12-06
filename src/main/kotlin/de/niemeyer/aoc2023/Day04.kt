@@ -6,6 +6,7 @@
 package de.niemeyer.aoc2023
 
 import de.niemeyer.aoc.utils.Resources.resourceAsList
+import de.niemeyer.aoc.utils.executeAndCheck
 import de.niemeyer.aoc.utils.getClassName
 
 fun main() {
@@ -34,14 +35,14 @@ fun main() {
     val puzzleInput = resourceAsList(fileName = "${name}.txt")
 
     check(part1(testInput) == 13)
-    val puzzleResultPart1 = part1(puzzleInput)
-    println(puzzleResultPart1)
-    check(puzzleResultPart1 == 25_183)
+    executeAndCheck(1, 25_183) {
+        part1(puzzleInput)
+    }
 
     check(part2(testInput) == 30)
-    val puzzleResultPart2 = part2(puzzleInput)
-    println(puzzleResultPart2)
-    check(puzzleResultPart2 == 5_667_240)
+    executeAndCheck(2, 5_667_240) {
+        part2(puzzleInput)
+    }
 }
 
 data class ScratchCardGame(val gameId: Int, val winning: Set<Int>, val scratchCard: Set<Int>) {

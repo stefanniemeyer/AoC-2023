@@ -6,8 +6,8 @@
 package de.niemeyer.aoc2023
 
 import de.niemeyer.aoc.utils.Resources.resourceAsList
+import de.niemeyer.aoc.utils.executeAndCheck
 import de.niemeyer.aoc.utils.getClassName
-import java.util.*
 
 fun main() {
     fun part1(input: List<String>): Int {
@@ -31,14 +31,14 @@ fun main() {
     val puzzleInput = resourceAsList(fileName = "${name}.txt")
 
     check(part1(testInput) == 8)
-    val puzzleResultPart1 = part1(puzzleInput)
-    println(puzzleResultPart1)
-    check(puzzleResultPart1 == 2_406)
+    executeAndCheck(1, 2_406) {
+        part1(puzzleInput)
+    }
 
     check(part2(testInput) == 2_286)
-    val puzzleResultPart2 = part2(puzzleInput)
-    println(puzzleResultPart2)
-    check(puzzleResultPart2 == 78_375)
+    executeAndCheck(2, 78_375) {
+        part2(puzzleInput)
+    }
 }
 
 enum class COLOR {
