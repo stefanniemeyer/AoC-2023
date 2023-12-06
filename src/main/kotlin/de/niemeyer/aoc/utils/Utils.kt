@@ -5,7 +5,6 @@ package de.niemeyer.aoc.utils
 import java.math.BigInteger
 import java.security.MessageDigest
 import kotlin.math.absoluteValue
-import kotlin.time.Duration
 import kotlin.time.measureTimedValue
 
 /**
@@ -40,14 +39,21 @@ fun Int.lcm(other: Int) =
         (this * other).absoluteValue / this.gcd(other)
     }
 
-fun formatDuration(duration: Duration): String {
+fun formatDuration(duration: kotlin.time.Duration): String {
     val minutes = duration.inWholeMinutes
     val seconds = duration.inWholeSeconds % 60
     val milliseconds = duration.inWholeMilliseconds % 1_000
-    return "${duration.inWholeMilliseconds}ms = " + listOf(minutes, seconds, milliseconds).zip(listOf("min", "s", "ms"))
+    return String.format("%,9d%s", duration.inWholeMilliseconds, "ms") + listOf(minutes, seconds, milliseconds).zip(listOf("min", "s", "ms"))
         .mapNotNull { (time, unit) ->
-            ("${time}${unit}").takeIf { time > 0L }
-        }.joinToString(" ").ifEmpty { "too fast to measure" }
+            (String.format("%,d%s", time, unit)).takeIf { time > 0L }
+        }.joinToString(" ")
+        .let {
+            if (it.isBlank()) {
+                ""
+            } else {
+                " = ${it}"
+            }
+        }
 }
 
 fun <T> executeAndCheck(part: Int, expected: T, block: () -> T) {
