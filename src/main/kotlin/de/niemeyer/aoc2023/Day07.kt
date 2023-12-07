@@ -11,18 +11,21 @@ import de.niemeyer.aoc.utils.getClassName
 
 fun main() {
     fun part1(input: List<String>): Long =
-        input.map { Hand.ofString(it) }.sorted().mapIndexed { idx, hand ->
-            (idx + 1) * hand.bid
-        }.sum()
+        input
+            .map { Hand.ofString(it) }
+            .sorted()
+            .mapIndexed { idx, hand ->
+                (idx + 1) * hand.bid
+            }.sum()
 
-    fun part2(input: List<String>): Long {
-        val x = input.map { it.replace('J', JOKER) }
-        val z = x.map { Hand.ofString(it) }.sorted()
-        val s = z.mapIndexed { idx, hand ->
-            (idx + 1) * hand.bid
-        }.sum()
-        return s
-    }
+    fun part2(input: List<String>): Long =
+        input
+            .map { it.replace('J', JOKER) }
+            .map { Hand.ofString(it) }
+            .sorted()
+            .mapIndexed { idx, hand ->
+                (idx + 1) * hand.bid
+            }.sum()
 
     val tests = mapOf(
         "JJ234" to CARDTYPE.THREE,
@@ -42,7 +45,7 @@ fun main() {
         "AAAAA" to CARDTYPE.FIVE,
         "JJJJJ" to CARDTYPE.FIVE,
         "AAJJA" to CARDTYPE.FIVE,
-        )
+    )
     tests.forEach {
         check(Hand.ofString(it.key.replace('J', JOKER) + " 1").type == it.value)
     }
@@ -73,22 +76,7 @@ enum class CARDTYPE {
 }
 
 val JOKER = 'X'
-val CardRanks = mapOf(
-    'A' to (1 shl 13),
-    'K' to (1 shl 12),
-    'Q' to (1 shl 11),
-    'J' to (1 shl 10),
-    'T' to (1 shl 9),
-    '9' to (1 shl 8),
-    '8' to (1 shl 7),
-    '7' to (1 shl 6),
-    '6' to (1 shl 5),
-    '5' to (1 shl 4),
-    '4' to (1 shl 3),
-    '3' to (1 shl 2),
-    '2' to (1 shl 1),
-    JOKER to (1)
-)
+val CardRanks = "AKQJT98765432${JOKER}".reversed().mapIndexed { idx, c -> c to idx }.toMap()
 
 class Hand(val cards: String, val type: CARDTYPE, val bid: Long) : Comparable<Hand> {
     override fun compareTo(other: Hand): Int =
