@@ -58,7 +58,7 @@ fun formatDuration(duration: kotlin.time.Duration): String {
 
 fun <T> executeAndCheck(part: Int, expected: T, block: () -> T) {
     val result = measureTimedValue { block() }
-    check(result.value == expected)
     println(result.value)
     println("Part ${part} took: ${formatDuration(result.duration)}")
+    check(result.value == expected)
 }
