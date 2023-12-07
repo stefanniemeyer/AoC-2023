@@ -10,21 +10,23 @@ import de.niemeyer.aoc.utils.executeAndCheck
 import de.niemeyer.aoc.utils.getClassName
 import de.niemeyer.aoc.utils.product
 
+val NUMBER = """\d+""".toRegex()
+
 fun main() {
     fun part1(input: List<String>): Int =
         input.map { line ->
-            line.split(" ").drop(1).filter { it.isNotBlank() }.map { it.toInt() }
+            NUMBER.findAll(line).map { it.value.toLong() }
         }.let { (times, durations) ->
             times.zip(durations)
         }.map { (time, duration) ->
             (1 until time).map { d ->
                 d * (time - d)
             }.count { it > duration }
-        }.product()
+        }.toList().product()
 
     fun part2(input: List<String>): Int {
         val (time, duration) = input.map { line ->
-            line.substringAfter(":").replace(" ", "").toLong()
+            line.filter(Char::isDigit).toLong()
         }.let { it.first() to it.last() }
 
         return (1 until time).map { d ->
