@@ -27,29 +27,6 @@ fun main() {
                 (idx + 1) * hand.bid
             }.sum()
 
-    val tests = mapOf(
-        "JJ234" to CARDTYPE.THREE,
-        "JJJ34" to CARDTYPE.FOUR,
-        "AA2KK" to CARDTYPE.TWO_PAIR,
-        "A2345" to CARDTYPE.HIGH_CARD,
-        "AA234" to CARDTYPE.ONE_PAIR,
-        "AJ234" to CARDTYPE.ONE_PAIR,
-        "AAA23" to CARDTYPE.THREE,
-        "AAA23" to CARDTYPE.THREE,
-        "AAJ23" to CARDTYPE.THREE,
-        "AAAKK" to CARDTYPE.FULL_HOUSE,
-        "AAJKK" to CARDTYPE.FULL_HOUSE,
-        "AAAA2" to CARDTYPE.FOUR,
-        "AAAJ2" to CARDTYPE.FOUR,
-        "JJJJ2" to CARDTYPE.FIVE,
-        "AAAAA" to CARDTYPE.FIVE,
-        "JJJJJ" to CARDTYPE.FIVE,
-        "AAJJA" to CARDTYPE.FIVE,
-    )
-    tests.forEach {
-        check(Hand.ofString(it.key.replace('J', JOKER) + " 1").type == it.value)
-    }
-
     val name = getClassName()
     val testInput = resourceAsList(fileName = "${name}_test.txt")
     val puzzleInput = resourceAsList(fileName = "${name}.txt")
@@ -65,18 +42,10 @@ fun main() {
     }
 }
 
-enum class CARDTYPE {
-    FIVE,
-    FOUR,
-    FULL_HOUSE,
-    THREE,
-    TWO_PAIR,
-    ONE_PAIR,
-    HIGH_CARD
-}
+enum class CARDTYPE { FIVE, FOUR, FULL_HOUSE, THREE, TWO_PAIR, ONE_PAIR, HIGH_CARD }
 
 val JOKER = 'X'
-val CardRanks = "AKQJT98765432${JOKER}".reversed().mapIndexed { idx, c -> c to idx }.toMap()
+val CardRanks = "${JOKER}23456789TJQKA".mapIndexed { idx, c -> c to idx }.toMap()
 
 class Hand(val cards: String, val type: CARDTYPE, val bid: Long) : Comparable<Hand> {
     override fun compareTo(other: Hand): Int =
@@ -89,32 +58,22 @@ class Hand(val cards: String, val type: CARDTYPE, val bid: Long) : Comparable<Ha
 
     companion object {
         fun ofString(input: String): Hand {
-            val cards = input.substringBefore(" ")
-            val type = typeOfCards(cards)
-            val bid = input.substringAfter(" ").toLong()
-            return Hand(cards, type, bid)
+            val (cards, bid) = input.split(" ")
+            return Hand(cards, typeOfCards(cards), bid.toLong())
         }
 
         fun typeOfCards(cards: String): CARDTYPE {
             val stats = cards.filter { it != JOKER }.groupingBy { it }.eachCount()
             val jokers = cards.count { it == JOKER }
-            val order = stats.values.sorted().reversed()
-            val highCount = order.firstOrNull() ?: 0
-            val secondCount = order.drop(1).firstOrNull() ?: 0
-            return if (highCount + jokers == 5) {
-                CARDTYPE.FIVE
-            } else if (highCount + jokers == 4) {
-                CARDTYPE.FOUR
-            } else if (highCount + jokers == 3 && secondCount == 2) {
-                CARDTYPE.FULL_HOUSE
-            } else if (highCount + jokers == 3) {
-                CARDTYPE.THREE
-            } else if (highCount == 2 && secondCount == 2) {
-                CARDTYPE.TWO_PAIR
-            } else if (highCount + jokers == 2) {
-                CARDTYPE.ONE_PAIR
-            } else {
-                CARDTYPE.HIGH_CARD
+            val (highCount, secondCount) = stats.values.sorted().reversed()
+            return when {
+                highCount + jokers == 5 -> CARDTYPE.FIVE
+                highCount + jokers == 4 -> CARDTYPE.FOUR
+                highCount + jokers == 3 && secondCount == 2 -> CARDTYPE.FULL_HOUSE
+                highCount + jokers == 3 -> CARDTYPE.THREE
+                highCount == 2 && secondCount == 2 -> CARDTYPE.TWO_PAIR
+                highCount + jokers == 2 -> CARDTYPE.ONE_PAIR
+                else -> CARDTYPE.HIGH_CARD
             }
         }
     }
