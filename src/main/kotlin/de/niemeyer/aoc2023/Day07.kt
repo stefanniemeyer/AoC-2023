@@ -10,22 +10,19 @@ import de.niemeyer.aoc.utils.executeAndCheck
 import de.niemeyer.aoc.utils.getClassName
 
 fun main() {
-    fun part1(input: List<String>): Long =
+    fun solve(input: List<String>) =
         input
             .map { Hand.ofString(it) }
-            .sorted()
+            .sortedWith(compareBy({ it.type }, { it.cards }))
             .mapIndexed { idx, hand ->
                 (idx + 1) * hand.bid
             }.sum()
 
+    fun part1(input: List<String>): Long =
+        solve(input)
+
     fun part2(input: List<String>): Long =
-        input
-            .map { it.replace('J', JOKER) }
-            .map { Hand.ofString(it) }
-            .sorted()
-            .mapIndexed { idx, hand ->
-                (idx + 1) * hand.bid
-            }.sum()
+        solve(input.map { it.replace('J', JOKER) })
 
     val name = getClassName()
     val testInput = resourceAsList(fileName = "${name}_test.txt")
@@ -45,20 +42,17 @@ fun main() {
 enum class CARDTYPE { FIVE, FOUR, FULL_HOUSE, THREE, TWO_PAIR, ONE_PAIR, HIGH_CARD }
 
 val JOKER = 'X'
-val CardRanks = "${JOKER}23456789TJQKA".mapIndexed { idx, c -> c to idx }.toMap()
+val CardRanking = "${JOKER}23456789TJQKA"
 
-class Hand(val cards: String, val type: CARDTYPE, val bid: Long) : Comparable<Hand> {
-    override fun compareTo(other: Hand): Int =
-        other.type.compareTo(this.type).takeIf { it != 0 }
-            ?: this.cards.zip(other.cards)
-                .firstNotNullOfOrNull { (t, o) ->
-                    CardRanks.getOrDefault(t, 0).compareTo(CardRanks.getOrDefault(o, 0))
-                        .takeIf { it != 0 }
-                } ?: 0
-
+class Hand(val cards: String, val type: CARDTYPE, val bid: Long) {
     companion object {
         fun ofString(input: String): Hand {
-            val (cards, bid) = input.split(" ")
+            val (cardsRaw, bid) = input.split(" ")
+            val cards = cardsRaw.map { card ->
+                CardRanking
+                    .indexOf(card)
+                    .let { (it + 'A'.code).toChar() }
+            }.joinToString("")
             return Hand(cards, typeOfCards(cards), bid.toLong())
         }
 
