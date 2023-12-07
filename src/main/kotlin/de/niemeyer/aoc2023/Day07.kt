@@ -41,8 +41,8 @@ fun main() {
 
 enum class CARDTYPE { FIVE, FOUR, FULL_HOUSE, THREE, TWO_PAIR, ONE_PAIR, HIGH_CARD }
 
-val JOKER = 'X'
-val CardRanking = "${JOKER}23456789TJQKA"
+const val JOKER = 'X'
+const val CardRanking = "${JOKER}23456789TJQKA"
 
 class Hand(val cards: String, val type: CARDTYPE, val bid: Long) {
     companion object {
@@ -56,7 +56,7 @@ class Hand(val cards: String, val type: CARDTYPE, val bid: Long) {
             return Hand(cards, typeOfCards(cards), bid.toLong())
         }
 
-        fun typeOfCards(cards: String): CARDTYPE {
+        private fun typeOfCards(cards: String): CARDTYPE {
             val stats = cards.filter { it != JOKER }.groupingBy { it }.eachCount()
             val jokers = cards.count { it == JOKER }
             val (highCount, secondCount) = stats.values.sorted().reversed()
