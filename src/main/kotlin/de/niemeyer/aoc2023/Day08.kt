@@ -15,25 +15,17 @@ import de.niemeyer.aoc.utils.lcm
 
 fun main() {
     fun part1(input: List<String>): Long {
+        val nodes = input.drop(2).associate { Node.of(it) }
         val directions = input.first().map { it.toDirectionScreen() }
-        val nodes = input.drop(2).associate { Node.ofString(it) }
-        val result = cyclicSequenceOf(directions).runningFold(START_NODE to 0L) { acc, direction ->
-            val (current, steps) = acc
-            val next = when {
-                direction == DirectionScreen.Left -> nodes.getValue(acc.first).left
-                else -> nodes.getValue(acc.first).right
-            }
-            if (current == TARGET_NODE) {
-                return@runningFold acc
-            }
-            next to steps + 1
-        }.firstOrNull { it.first == TARGET_NODE }
-        return result?.second ?: 0
+        val result = cyclicSequenceOf(directions).runningFold(START_NODE to 0L) { (current, steps), direction ->
+            nodes.getValue(current).next(direction) to steps + 1
+        }.first { it.first == TARGET_NODE }
+        return result.second
     }
 
     fun part2(input: List<String>): Long {
         val directions = input.first().map { it.toDirectionScreen() }
-        val nodes = input.drop(2).associate { Node.ofString(it) }
+        val nodes = input.drop(2).associate { Node.of(it) }
         val startNodes = nodes.keys.filter { it.endsWith("A") }
         val steps = MutableList(startNodes.size) { 0L }
         val startStates = startNodes.zip(steps)
@@ -42,20 +34,13 @@ fun main() {
                 if (position.endsWith("Z")) {
                     position to steps
                 } else {
-                    val next = when {
-                        direction == DirectionScreen.Left -> nodes.getValue(position).left
-                        else -> nodes.getValue(position).right
-                    }
-                    next to steps + 1
+                    nodes.getValue(position).next(direction) to steps + 1
                 }
             }
-            if (newStates.all { it.first.endsWith("Z") }) {
-                return@runningFold newStates
-            }
             newStates
-        }.firstOrNull { it.all { state -> state.first.endsWith("Z") } }
+        }.first { it.all { state -> state.first.endsWith("Z") } }
 
-        return result!!.toList()
+        return result.toList()
             .map { it.second }
             .reduce { acc, it ->
                 acc.lcm(it)
@@ -80,18 +65,23 @@ fun main() {
     }
 }
 
-val START_NODE = "AAA"
-val TARGET_NODE = "ZZZ"
+const val START_NODE = "AAA"
+const val TARGET_NODE = "ZZZ"
 
 data class Node(val left: String, val right: String) {
+    fun next(direction: DirectionScreen) =
+        when (direction) {
+            DirectionScreen.Left -> left
+            else -> right
+        }
+
     companion object {
-        fun ofString(input: String): Pair<String, Node> {
-            val NODE = """([A-Z0-9]+) = \(([A-Z0-9]+),\s+([A-Z0-9]+)\)""".toRegex()
-            return NODE.findAll(input).map { matchResult ->
+        private val NODE = """(\w+)\s+=\s+\((\w+),\s+(\w+)\)""".toRegex()
+        fun of(input: String): Pair<String, Node> =
+            NODE.findAll(input).map { matchResult ->
                 val (node, left, right) = matchResult.destructured
                 node to Node(left, right)
             }.first()
-        }
     }
 }
 
