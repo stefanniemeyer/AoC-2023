@@ -2,6 +2,9 @@
 
 package de.niemeyer.aoc.utils
 
+import java.math.BigInteger
+import kotlin.math.absoluteValue
+
 // println("abcdefghij".iterator().next(5))
 // abcde
 fun Iterator<Char>.next(size: Int): String =
@@ -68,8 +71,8 @@ fun Char.asLong(): Long =
 
 // val a = arrayOf((
 //         "abcde").toCharArray(),
-//     "12345".toCharArray(),
-//     "ABCDE".toCharArray()
+//         "12345".toCharArray(),
+//         "ABCDE".toCharArray()
 // )// println(a.peer(1, 1, 2, 2))
 // (0, 3)
 fun Array<CharArray>.peer(posRow: Int, posCol: Int, offsetRow: Int, offsetCol: Int): Pair<Int, Int> =
@@ -86,3 +89,33 @@ infix fun IntRange.union(other: IntRange): IntRange =
 
 fun IntRange.size(): Int =
     last - first + 1
+
+/**
+ * lcm / gcd for Int
+ */
+fun Int.lcm(other: Int) = (this * other).absoluteValue / this.gcd(other)
+
+fun Int.gcd(other: Int): Int {
+    var a = this
+    var b = other
+    while (b != 0) a = b.also { b = a.mod(b) }
+    return a
+}
+
+/**
+ * lcm / gcd for Long
+ */
+fun Long.lcm(other: Long) = (this * other).absoluteValue / this.gcd(other)
+
+fun Long.gcd(other: Long): Long {
+    var a = this
+    var b = other
+    while (b != 0L) a = b.also { b = a.mod(b) }
+    return a
+}
+
+/**
+ * lcm for BigInteger
+ * gcd already is included in BigInteger
+ */
+fun BigInteger.lcm(other: BigInteger) = this / this.gcd(other) * other

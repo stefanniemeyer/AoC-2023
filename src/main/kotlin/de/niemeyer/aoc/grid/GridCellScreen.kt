@@ -17,7 +17,12 @@ data class GridCellScreen(val row: Int, val column: Int) {
     }
 
     val axisNeighbors: List<GridCellScreen> by lazy {
-        listOf(GridCellScreen(0, 1), GridCellScreen(1, 0), GridCellScreen(0, -1), GridCellScreen(-1, 0)).map { this + it }
+        listOf(
+            GridCellScreen(0, 1),
+            GridCellScreen(1, 0),
+            GridCellScreen(0, -1),
+            GridCellScreen(-1, 0)
+        ).map { this + it }
     }
 
     infix fun sharesAxisWith(that: GridCellScreen): Boolean =

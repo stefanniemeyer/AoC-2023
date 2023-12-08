@@ -87,4 +87,3 @@ data class Point2D(val x: Int, val y: Int) : Point {
             Point2D(input.substringBefore(delimiter).toInt(), input.substringAfter(delimiter).toInt())
     }
 }
-

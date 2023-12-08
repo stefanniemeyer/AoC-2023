@@ -138,7 +138,7 @@ class Grid(var gridMap: Map<GridCellScreen, GridCellContainer>, val offset: Grid
         }.removeSuffix(System.lineSeparator())
 
     companion object {
-        fun of(input: List<String>, offset: GridCellScreen = GridCellScreen(0, 0), ignoreChar: Char = ' '): Grid =
+        fun of(input: List<String>, offset: GridCellScreen = GridCellScreen.ORIGIN, ignoreChar: Char = ' '): Grid =
             input.mapIndexed { rowIndex, row ->
                 row.mapIndexedNotNull { columnIndex, c ->
                     if (c == ignoreChar) {
@@ -150,7 +150,7 @@ class Grid(var gridMap: Map<GridCellScreen, GridCellContainer>, val offset: Grid
                 }
             }.flatten().toMap().let { Grid(it, offset) }
 
-        fun of(input: String, offset: GridCellScreen = GridCellScreen(0, 0), ignoreChar: Char = ' '): Grid =
+        fun of(input: String, offset: GridCellScreen = GridCellScreen.ORIGIN, ignoreChar: Char = ' '): Grid =
             of(input.lines(), offset, ignoreChar)
     }
 }
