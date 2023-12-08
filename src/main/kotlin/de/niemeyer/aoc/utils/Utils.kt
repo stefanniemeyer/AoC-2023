@@ -46,8 +46,8 @@ fun <T> executeAndCheck(part: Int, expected: T, block: () -> T) {
     check(result.value == expected)
 }
 
-fun <T> cyclicSequenceOf(list: List<T>): Sequence<T> = sequence {
-    while (true) { // endless loop
-        list.forEach { yield(it) }
+fun <T> Iterable<T>.repeatInfinite(): Sequence<T> = sequence {
+    while (true) {
+        yieldAll(this@repeatInfinite)
     }
 }

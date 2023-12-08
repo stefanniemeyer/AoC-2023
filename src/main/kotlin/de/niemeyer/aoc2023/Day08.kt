@@ -8,16 +8,16 @@ package de.niemeyer.aoc2023
 import de.niemeyer.aoc.direction.DirectionScreen
 import de.niemeyer.aoc.direction.toDirectionScreen
 import de.niemeyer.aoc.utils.Resources.resourceAsList
-import de.niemeyer.aoc.utils.cyclicSequenceOf
 import de.niemeyer.aoc.utils.executeAndCheck
 import de.niemeyer.aoc.utils.getClassName
 import de.niemeyer.aoc.utils.lcm
+import de.niemeyer.aoc.utils.repeatInfinite
 
 fun main() {
     fun part1(input: List<String>): Long {
         val nodes = input.drop(2).associate { Node.of(it) }
         val directions = input.first().map { it.toDirectionScreen() }
-        val result = cyclicSequenceOf(directions).runningFold(START_NODE to 0L) { (current, steps), direction ->
+        val result = directions.repeatInfinite().runningFold(START_NODE to 0L) { (current, steps), direction ->
             nodes.getValue(current).next(direction) to steps + 1
         }.first { it.first == TARGET_NODE }
         return result.second
@@ -29,7 +29,7 @@ fun main() {
         val startNodes = nodes.keys.filter { it.endsWith("A") }
         val steps = MutableList(startNodes.size) { 0L }
         val startStates = startNodes.zip(steps)
-        val result = cyclicSequenceOf(directions).runningFold(startStates) { states, direction ->
+        val result = directions.repeatInfinite().runningFold(startStates) { states, direction ->
             val newStates = states.map { (position, steps) ->
                 if (position.endsWith("Z")) {
                     position to steps

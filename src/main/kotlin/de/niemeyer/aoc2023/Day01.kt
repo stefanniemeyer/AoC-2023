@@ -10,21 +10,28 @@ import de.niemeyer.aoc.utils.executeAndCheck
 import de.niemeyer.aoc.utils.getClassName
 
 fun main() {
-    fun addFirstAndLast(input: List<String>) =
-        input.map {
-            it.filter { letter -> letter.isDigit() }
-        }.map { nums ->
-            "${nums.first()}${nums.last()}".toInt()
+    val digits = List(10) { IndexedValue(it, it.toString()) }
+    val words = listOf("one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
+        .mapIndexed { idx, word ->
+            IndexedValue(idx + 1, word)
+        }
+    val extendedDigits = digits + words
+
+    fun addFirstAndLast(input: List<String>, nums: List<IndexedValue<String>>): Int =
+        input.map { line ->
+            line.windowed(5, 1, partialWindows = true)  // 5 == max len of elements in 'words'
+                .mapNotNull { part ->
+                    nums.firstOrNull { part.startsWith(it.value) }?.index
+                }
+        }.map { digitsFound ->
+            10 * digitsFound.first() + digitsFound.last()
         }.sum()
 
     fun part1(input: List<String>): Int =
-        addFirstAndLast(input)
+        addFirstAndLast(input, digits)
 
-    fun part2(input: List<String>): Int {
-        val newInput = NumConverter.parse(input)
-        val res = addFirstAndLast(newInput)
-        return res
-    }
+    fun part2(input: List<String>): Int =
+        addFirstAndLast(input, extendedDigits)
 
     fun readInput(fileName: String): List<String> =
         resourceAsList(fileName)
@@ -42,47 +49,5 @@ fun main() {
     check(part2(testInput2) == 281)
     executeAndCheck(2, 54_078) {
         part2(puzzleInput)
-    }
-}
-
-data class NumConverter(val nums: List<String>) {
-    companion object {
-        val numberAsString = mapOf(
-            "one" to "1",
-            "two" to "2",
-            "three" to "3",
-            "four" to "4",
-            "five" to "5",
-            "six" to "6",
-            "seven" to "7",
-            "eight" to "8",
-            "nine" to "9"
-        )
-        val reverserdNumberAsString = numberAsString.mapKeys { (k, _) -> k.reversed() }
-
-        fun replaceSpelledNumbers(text: String, numbers: Map<String, String>): String {
-            if (text.isEmpty()) return ""
-            val rf = replaceSpelledNumbersAtStart(numbers, text)
-            val f = rf.first()
-            if (f.isDigit()) return f.toString()
-            return replaceSpelledNumbers(rf.substring(1), numbers)
-        }
-
-        fun replaceSpelledNumbersAtStart(numbers: Map<String, String>, text: String): String {
-            var res = text
-            numbers.forEach { k, v ->
-                if (text.startsWith(k)) {
-                    res = text.replaceFirst(k, v)
-                }
-            }
-            return res
-        }
-
-        fun parse(input: List<String>): List<String> =
-            input.map { line ->
-                val res = replaceSpelledNumbers(line, numberAsString).filter { it.isDigit() }.first().toString()
-                val revRes = replaceSpelledNumbers(line.reversed(), reverserdNumberAsString).filter { it.isDigit() }.first().toString()
-                res + revRes
-            }
     }
 }
