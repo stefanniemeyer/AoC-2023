@@ -39,6 +39,23 @@ fun Int.lcm(other: Int) =
         (this * other).absoluteValue / this.gcd(other)
     }
 
+tailrec fun Long.gcd(other: Long): Long {
+    return if (this == 0L || other == 0L) {
+        this + other
+    } else {
+        val bigger = maxOf(this.absoluteValue, other.absoluteValue)
+        val smaller = minOf(this.absoluteValue, other.absoluteValue)
+        (bigger % smaller).gcd(smaller)
+    }
+}
+
+fun Long.lcm(other: Long) =
+    if (this == 0L || other == 0L) {
+        0
+    } else {
+        (this * other).absoluteValue / this.gcd(other)
+    }
+
 fun formatDuration(duration: kotlin.time.Duration): String {
     val minutes = duration.inWholeMinutes
     val seconds = duration.inWholeSeconds % 60
@@ -61,4 +78,10 @@ fun <T> executeAndCheck(part: Int, expected: T, block: () -> T) {
     println(result.value)
     println("Part ${part} took: ${formatDuration(result.duration)}")
     check(result.value == expected)
+}
+
+fun <T> cyclicSequenceOf(list: List<T>): Sequence<T> = sequence {
+    while (true) { // Endlose Schleife
+        list.forEach { yield(it) }
+    }
 }
