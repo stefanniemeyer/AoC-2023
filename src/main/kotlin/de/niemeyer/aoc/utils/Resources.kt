@@ -21,7 +21,7 @@ internal object Resources {
         File(fileName.toURI()).readLines()
 
     fun resourceAsListOfInt(fileName: String): List<Int> =
-        resourceAsList(fileName).map { it.toInt() }
+        resourceAsList(fileName).map(String::toInt)
 
     fun resourceAsListOfListOfInt(fileName: String, separator : String = " "): List<List<Int>> =
         resourceAsList(fileName).map { line ->
