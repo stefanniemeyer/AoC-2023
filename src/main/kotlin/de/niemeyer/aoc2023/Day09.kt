@@ -21,24 +21,20 @@ fun main() {
         return if (nextList.all { it == 0L }) acc else recursiveDiff(nextList, acc)
     }
 
-    fun part1(input: List<List<Long>>): Long =
+    fun solve(input: List<List<Long>>): Long =
         input.map { nums ->
             recursiveDiff(nums).map { it.last() }
                 .reversed()
                 .fold(0L) { acc, num ->
-                    acc + num
+                    num + acc
                 }
         }.sum()
 
+    fun part1(input: List<List<Long>>): Long =
+        solve(input)
+
     fun part2(input: List<List<Long>>): Long =
-        input.map { nums ->
-            recursiveDiff(nums)
-                .map { it.first() }
-                .reversed()
-                .fold(0L) { acc, num ->
-                    num - acc
-                }
-        }.sum()
+        solve(input.map { it.reversed() })
 
     val name = getClassName()
     val testInput = resourceAsListOfListOfLong(fileName = "${name}_test.txt")

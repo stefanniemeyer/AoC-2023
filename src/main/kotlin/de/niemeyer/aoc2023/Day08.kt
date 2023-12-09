@@ -84,4 +84,3 @@ data class Node(val left: String, val right: String) {
             }.first()
     }
 }
-
