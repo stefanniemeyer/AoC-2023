@@ -23,8 +23,22 @@ internal object Resources {
     fun resourceAsListOfInt(fileName: String): List<Int> =
         resourceAsList(fileName).map { it.toInt() }
 
+    fun resourceAsListOfListOfInt(fileName: String, separator : String = " "): List<List<Int>> =
+        resourceAsList(fileName).map { line ->
+            line.split(separator)
+                .filterNot(String::isEmpty)
+                .map(String::toInt)
+        }
+
     fun resourceAsListOfLong(fileName: String): List<Long> =
-        resourceAsList(fileName).map { it.toLong() }
+        resourceAsList(fileName).map(String::toLong)
+
+    fun resourceAsListOfListOfLong(fileName: String, separator : String = " "): List<List<Long>> =
+        resourceAsList(fileName).map { line ->
+            line.split(separator)
+                .filterNot(String::isEmpty)
+                .map(String::toLong)
+        }
 
     fun resourceAsListOfString(fileName: String): List<String> =
         File(fileName.toURI()).readLines()
