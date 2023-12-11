@@ -18,7 +18,7 @@ fun main() {
                 var emptyRowCount = 0
                 (gridSet.minOf { it.row }..gridSet.maxOf { it.row }).forEach { row ->
                     if (gridSet.none { it.row == row }) {
-                        emptyRowCount  += factor - 1
+                        emptyRowCount += factor - 1
                     } else {
                         gridSet.filter { it.row == row }.forEach {
                             add(GridCellScreen(it.row + emptyRowCount, it.column))
