@@ -31,6 +31,9 @@ data class GridCellScreen(val row: Int, val column: Int) {
     operator fun plus(other: GridCellScreen): GridCellScreen =
         GridCellScreen(row + other.row, column + other.column)
 
+    operator fun minus(other: GridCellScreen): GridCellScreen =
+        GridCellScreen(row - other.row, column - other.column)
+
     operator fun times(by: Int): GridCellScreen =
         GridCellScreen(row * by, column * by)
 
