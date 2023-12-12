@@ -60,17 +60,17 @@ fun findOrder(groups: List<Int>, record: String): Long {
 }
 
 private fun getOrder(groups: List<Int>, record: String): Long {
-    cache[groups to record]?.let { return it }
+    cache[groups to record]?.let { return it }                    // solution is cached
 
-    if (groups.isEmpty()) return 0
+    if (groups.isEmpty()) return 0                                // all groups are processed
     val firstGroup = groups.first()
 
     if (record.length < firstGroup) return 0                      // fewer chars in the record than needed for the group
     if (record.indexOf('.') in 0..<firstGroup) return 0   // not enough chars in the record before the next '.'
     if (record.length == firstGroup) {
-        return if (groups.size == 1) 1 else 0
+        return if (groups.size == 1) 1 else 0                     // only 1 group left an record has exactly group size
     }
-    if (record[firstGroup] == '#') return 0
+    if (record[firstGroup] == '#') return 0                       // first char after group cannot be '#'
 
     return findOrder(groups.drop(1), record.drop(firstGroup + 1))
 }
