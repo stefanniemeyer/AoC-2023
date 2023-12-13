@@ -55,6 +55,8 @@ fun findOrder(groups: List<Int>, record: String): Long {
         '.' -> findOrder(groups, restRecord)
         '#' -> getOrder(groups, record).also { cache[groups to record] = it }
         '?' -> findOrder(groups, restRecord) + getOrder(groups, record).also { cache[groups to record] = it }
+        // findOrder(groups, restRecord) act as if '?' was a '.'
+        // getOrder(groups, record)      act as if '?' was a '#'
         else -> error("Unexpected Character '${record.first()}'")
     }
 }
@@ -68,7 +70,7 @@ private fun getOrder(groups: List<Int>, record: String): Long {
     if (record.length < firstGroup) return 0                      // fewer chars in the record than needed for the group
     if (record.indexOf('.') in 0..<firstGroup) return 0   // not enough chars in the record before the next '.'
     if (record.length == firstGroup) {
-        return if (groups.size == 1) 1 else 0                     // only 1 group left an record has exactly group size
+        return if (groups.size == 1) 1 else 0                     // only 1 group left and record has exactly group size
     }
     if (record[firstGroup] == '#') return 0                       // first char after group cannot be '#'
 
