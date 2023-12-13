@@ -12,8 +12,9 @@ import de.niemeyer.aoc.utils.getClassName
 fun main() {
     fun solve(input: List<String>) =
         input
-            .map { Hand.ofString(it) }
+            .map { Hand.of(it) }
             .sortedWith(compareBy({ it.type }, { it.cards }))
+//            .also { h -> println(h) }
             .mapIndexed { idx, hand ->
                 (idx + 1) * hand.bid
             }.sum()
@@ -39,27 +40,30 @@ fun main() {
     }
 }
 
-enum class CARDTYPE { FIVE, FOUR, FULL_HOUSE, THREE, TWO_PAIR, ONE_PAIR, HIGH_CARD }
+enum class CARDTYPE { HIGH_CARD, ONE_PAIR, TWO_PAIR, THREE, FULL_HOUSE, FOUR, FIVE }
 
-const val JOKER = 'X'
+const val JOKER = '0'
 const val CardRanking = "${JOKER}23456789TJQKA"
+val TransJoker = CardRanking.indexOf(JOKER).transform()
+
+fun Int.transform() = (this + 'a'.code).toChar()
 
 class Hand(val cards: String, val type: CARDTYPE, val bid: Long) {
     companion object {
-        fun ofString(input: String): Hand {
+        fun of(input: String): Hand {
             val (cardsRaw, bid) = input.split(" ")
             val cards = cardsRaw.map { card ->
-                CardRanking
-                    .indexOf(card)
-                    .let { (it + 'A'.code).toChar() }
+                CardRanking.indexOf(card).transform()
             }.joinToString("")
             return Hand(cards, typeOfCards(cards), bid.toLong())
         }
 
         private fun typeOfCards(cards: String): CARDTYPE {
-            val stats = cards.filter { it != JOKER }.groupingBy { it }.eachCount()
-            val jokers = cards.count { it == JOKER }
-            val (highCount, secondCount) = stats.values.sorted().reversed()
+            val stats = cards.filter { it != TransJoker }.groupingBy { it }.eachCount()
+            val jokers = cards.count { it == TransJoker }
+            val counts = stats.values.sorted().reversed()
+            val highCount = counts.getOrElse(0) { 0 }
+            val secondCount = counts.getOrElse(1) { 0 }
             return when {
                 highCount + jokers == 5 -> CARDTYPE.FIVE
                 highCount + jokers == 4 -> CARDTYPE.FOUR

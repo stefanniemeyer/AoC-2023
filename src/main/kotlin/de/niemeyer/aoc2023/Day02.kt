@@ -12,7 +12,7 @@ import de.niemeyer.aoc.utils.getClassName
 fun main() {
     fun part1(input: List<String>): Int {
         val (maxRed, maxGreen, maxBlue) = listOf(12, 13, 14)
-        val games = input.map { Game.ofString(it) }
+        val games = input.map { Game.of(it) }
         val possible = games.filter { game ->
             game.cubes.all { cube ->
                 cube.red <= maxRed && cube.green <= maxGreen && cube.blue <= maxBlue
@@ -23,7 +23,7 @@ fun main() {
 
     fun part2(input: List<String>): Int =
         input
-            .map { Game.ofString(it) }
+            .map { Game.of(it) }
             .sumOf { it.power }
 
     val name = getClassName()
@@ -60,10 +60,10 @@ data class Game(val id: Int, val cubes: List<Cube>) {
         get() = maxRed * maxGreen * maxBlue
 
     companion object {
-        fun ofString(input: String): Game {
+        fun of(input: String): Game {
             val id = input.substringBefore(":").substringAfter(" ").toInt()
             val bags = input.substringAfter(":")
-            val cubes = bags.split(";").map { Cube.ofString(it) }
+            val cubes = bags.split(";").map { Cube.of(it) }
 
             return Game(id, cubes)
         }
@@ -72,7 +72,7 @@ data class Game(val id: Int, val cubes: List<Cube>) {
 
 data class Cube(val red: Int, val green: Int, val blue: Int) {
     companion object {
-        fun ofString(input: String): Cube {
+        fun of(input: String): Cube {
             val pattern = """(\d+)\s*(red|green|blue)""".toRegex()
             val colors = pattern.findAll(input).map { matchResult ->
                 val (number, color) = matchResult.destructured

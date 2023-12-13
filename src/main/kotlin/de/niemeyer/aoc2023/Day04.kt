@@ -12,14 +12,14 @@ import de.niemeyer.aoc.utils.getClassName
 fun main() {
     fun part1(input: List<String>): Int =
         input.map {
-            ScratchCardGame.ofString(it)
+            ScratchCardGame.of(it)
         }.mapNotNull { game ->
             (game.countNumbersWon - 1).takeIf { it >= 0 }
         }.sumOf { 1 shl it }
 
     fun part2(input: List<String>): Int {
         val games = input.map {
-            ScratchCardGame.ofString(it)
+            ScratchCardGame.of(it)
         }
         val countGames = games.map { 1 to it.countNumbersWon }.toMutableList()
         countGames.forEachIndexed { idx, v ->
@@ -50,7 +50,7 @@ data class ScratchCardGame(val gameId: Int, val winning: Set<Int>, val scratchCa
     val countNumbersWon = numbersWon.size
 
     companion object {
-        fun ofString(input: String): ScratchCardGame {
+        fun of(input: String): ScratchCardGame {
             val gameId = input.substringBefore(':').substringAfterLast(' ').toInt()
             val winning =
                 input.substringAfter(':').substringBefore('|').trim().split("""\s+""".toRegex()).map { it.toInt() }

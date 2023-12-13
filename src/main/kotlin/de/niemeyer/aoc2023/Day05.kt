@@ -18,7 +18,7 @@ fun main() {
         val rules = input.split("\n\n").map { it.trim() }
         val seeds = rules.first().substringAfter(":").split(' ').mapNotNull { it.toLongOrNull() }
         val resources = rules.drop(1).map {
-            Resource.ofString(it)
+            Resource.of(it)
         }
         return seeds to resources
     }
@@ -78,19 +78,17 @@ data class ResourceConversion(val sourceRangeStart: Long, val destinationRangeSt
 class Resource(
     private val conversions: List<ResourceConversion>
 ) {
-    fun convert(startPoint: Long): Long {
-        val x = conversions.firstNotNullOfOrNull { conversion ->
+    fun convert(startPoint: Long): Long =
+        conversions.firstNotNullOfOrNull { conversion ->
             if (startPoint in conversion.sourceRangeStart..<conversion.sourceRangeStart + conversion.rangeLength) {
                 startPoint - conversion.sourceRangeStart + conversion.destinationRangeStart
             } else {
                 null
             }
         } ?: startPoint
-        return x
-    }
 
     companion object {
-        fun ofString(input: String): Resource {
+        fun of(input: String): Resource {
             val lines = input.lines()
             val conversionList = lines.drop(1).map { line ->
                 val (destinationStart, sourceStart, rangeLength) = line.split(' ').map { num ->
@@ -98,9 +96,7 @@ class Resource(
                 }
                 ResourceConversion(sourceStart, destinationStart, rangeLength)
             }
-            return Resource(
-                conversionList
-            )
+            return Resource(conversionList)
         }
     }
 }

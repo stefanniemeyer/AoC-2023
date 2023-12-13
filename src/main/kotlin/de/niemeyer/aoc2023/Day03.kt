@@ -12,8 +12,8 @@ import de.niemeyer.aoc.utils.getClassName
 
 fun main() {
     fun part1(input: List<String>): Int {
-        val rawSchematic = RawSchematic.ofString(input)
-        val engine = Engine.ofRawSchematic(rawSchematic)
+        val rawSchematic = RawSchematic.of(input)
+        val engine = Engine.of(rawSchematic)
         val symbols = rawSchematic.rawSchematic.filter { (_, v) ->
             !v.isDigit()
         }
@@ -28,8 +28,8 @@ fun main() {
     }
 
     fun part2(input: List<String>): Long {
-        val rawSchematic = RawSchematic.ofString(input)
-        val engine = Engine.ofRawSchematic(rawSchematic)
+        val rawSchematic = RawSchematic.of(input)
+        val engine = Engine.of(rawSchematic)
         val symbols = rawSchematic.rawSchematic.filter { (_, v) ->
             v == '*'
         }
@@ -82,7 +82,7 @@ data class RawSchematic(val rawSchematic: Map<GridCellScreen, Char>) {
     val columnMax = if (rawSchematic.isEmpty()) 0 else rawSchematic.keys.maxOf { it.column }
 
     companion object {
-        fun ofString(input: List<String>, ignoreChar: Char = '.'): RawSchematic {
+        fun of(input: List<String>, ignoreChar: Char = '.'): RawSchematic {
             val schema = input.mapIndexed { row, line ->
                 line.mapIndexedNotNull() { column, c ->
                     if (c == ignoreChar) {
@@ -101,7 +101,7 @@ data class PartNumber(val partId: Int, val fields: Set<GridCellScreen>)
 
 data class Engine(val engine: List<PartNumber>) {
     companion object {
-        fun ofRawSchematic(schema: RawSchematic): Engine {
+        fun of(schema: RawSchematic): Engine {
             val numbers = mutableListOf<PartNumber>()
             for (row in schema.rowMin..schema.rowMax) {
                 var collecting = false
