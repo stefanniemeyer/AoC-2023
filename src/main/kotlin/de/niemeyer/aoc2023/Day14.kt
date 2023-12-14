@@ -58,7 +58,7 @@ fun Set<GridCellScreen>.compress(facing: DirectionScreen): Set<GridCellScreen> {
     return result
 }
 
-fun solve(input: List<String>, cycles: Int = 0): Long {
+fun solve2(input: List<String>, cycles: Int = 0): Long {
     height = input.size
     width = input.first().length
     cubeRocks = Grid.of(input, GridCellScreen(1, 1), ignoreChars = listOf('.', 'O')).gridMap.keys.toSet()
@@ -75,10 +75,10 @@ fun solve(input: List<String>, cycles: Int = 0): Long {
         var absolvedCycles = 0
         var caching = true
         while (absolvedCycles < cycles) {
-            val beforeHash = r.toList().toString()
+            val beforeHash = r.sortedWith(compareBy { it.toString() }).toString()
 //            println("hash $beforeHash")
             var doneInRound = -1
-            if (caching && dishCache.containsKey(r.toList().toString())) {
+            if (caching && dishCache.containsKey(beforeHash)) {
                 doneInRound = dishCache.getValue(beforeHash)
                 val loopLength = absolvedCycles - doneInRound + 1
                 println("    after $absolvedCycles done in round $doneInRound loopLenght $loopLength")
@@ -127,9 +127,9 @@ fun main() {
 //                row.count('O'::equals) * (idx + 1L)
 //            }.sum()
 
-    fun part1(input: List<String>): Long = solve(input)
+    fun part1(input: List<String>): Long = solve2(input)
 
-    fun part2(input: List<String>): Long = solve(input, 1_000_000_000)
+    fun part2(input: List<String>): Long = solve2(input, 1_000_000_000)
 
     val name = getClassName()
     val testInput = resourceAsList(fileName = "${name}_test.txt")
