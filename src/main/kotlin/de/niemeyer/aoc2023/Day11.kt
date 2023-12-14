@@ -1,5 +1,5 @@
 /**
- * Advent of Code 2023, Day 11:
+ * Advent of Code 2023, Day 11: Cosmic Expansion
  * Problem Description: https://adventofcode.com/2023/day/11
  */
 
@@ -13,7 +13,7 @@ import de.niemeyer.aoc.grid.GridCellScreen
 
 fun main() {
     fun solve(input: List<String>, factor: Int = 2): Long =
-        Grid.of(input, ignoreChar = '.').gridMap.keys.toSet().let { gridSet ->
+        Grid.of(input, ignoreChars = listOf('.')).gridMap.keys.toSet().let { gridSet ->
             buildSet {
                 var emptyRowCount = 0
                 (gridSet.minOf { it.row }..gridSet.maxOf { it.row }).forEach { row ->

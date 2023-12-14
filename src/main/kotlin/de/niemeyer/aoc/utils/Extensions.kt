@@ -119,3 +119,21 @@ fun Long.gcd(other: Long): Long {
  * gcd already is included in BigInteger
  */
 fun BigInteger.lcm(other: BigInteger) = this / this.gcd(other) * other
+
+
+fun List<String>.rotateLeft(): List<String> {
+    val rotated = this.map { it.reversed() }.toList()
+    return rotated[0].indices
+        .map { i ->
+            rotated.map { it[i] }
+        }.map { it.joinToString("") }
+}
+
+fun List<String>.rotateRight(): List<String> =
+    List(this.first().length) { col ->
+        buildString {
+            (size - 1 downTo 0).forEach { row ->
+                append(this@rotateRight[row][col])
+            }
+        }
+    }

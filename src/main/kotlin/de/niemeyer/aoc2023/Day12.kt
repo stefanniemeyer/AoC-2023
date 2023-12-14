@@ -1,5 +1,5 @@
 /**
- * Advent of Code 2023, Day 12:
+ * Advent of Code 2023, Day 12: Hot Springs
  * Problem Description: https://adventofcode.com/2023/day/12
  * Disclaimer: The solution is basically from Kroppeb/AdventOfCodeSolutions2. I did a bit refactoring.
  */

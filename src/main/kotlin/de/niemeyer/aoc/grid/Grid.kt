@@ -9,7 +9,10 @@ enum class ORIENTATION {
     FLIPPED
 }
 
-data class TileInstructions(val rotate: DirectionScreen = DirectionScreen.Up, val orient: ORIENTATION = ORIENTATION.NORMAL)
+data class TileInstructions(
+    val rotate: DirectionScreen = DirectionScreen.Up,
+    val orient: ORIENTATION = ORIENTATION.NORMAL
+)
 
 data class GridCellContainer(val value: Boolean, val original: GridCellScreen = GridCellScreen(0, 0))
 
@@ -64,7 +67,9 @@ class Grid(var gridMap: Map<GridCellScreen, GridCellContainer>, val offset: Grid
 
                 for (row in rowProg) {
                     for (column in columnProg) {
-                        result[transFunc(row, column)] = gridMap.getValue(GridCellScreen(row, column))
+                        if (gridMap.keys.contains(GridCellScreen(row, column))) {
+                            result[transFunc(row, column)] = gridMap.getValue(GridCellScreen(row, column))
+                        }
                     }
                 }
                 result.toMap()
@@ -138,19 +143,29 @@ class Grid(var gridMap: Map<GridCellScreen, GridCellContainer>, val offset: Grid
         }.removeSuffix(System.lineSeparator())
 
     companion object {
-        fun of(input: List<String>, offset: GridCellScreen = GridCellScreen.ORIGIN, ignoreChar: Char = ' '): Grid =
+        fun of(
+            input: List<String>,
+            offset: GridCellScreen = GridCellScreen.ORIGIN,
+            ignoreChars: List<Char> = listOf(' '),
+            relevantChars: List<Char> = listOf('#')
+        ): Grid =
             input.mapIndexed { rowIndex, row ->
                 row.mapIndexedNotNull { columnIndex, c ->
-                    if (c == ignoreChar) {
+                    if (ignoreChars.contains(c)) {
                         null
                     } else {
                         val cell = GridCellScreen(rowIndex + offset.row, columnIndex + offset.column)
-                        cell to GridCellContainer(c == '#', cell.copy())
+                        cell to GridCellContainer(relevantChars.contains(c), cell.copy())
                     }
                 }
             }.flatten().toMap().let { Grid(it, offset) }
 
-        fun of(input: String, offset: GridCellScreen = GridCellScreen.ORIGIN, ignoreChar: Char = ' '): Grid =
-            of(input.lines(), offset, ignoreChar)
+        fun of(
+            input: String,
+            offset: GridCellScreen = GridCellScreen.ORIGIN,
+            ignoreChar: List<Char> = listOf(' '),
+            relevantChars: List<Char> = listOf('#')
+        ): Grid =
+            of(input.lines(), offset, ignoreChar, relevantChars)
     }
 }

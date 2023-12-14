@@ -99,3 +99,12 @@ fun String.toCompassDirectionScreen(): CompassDirectionScreen =
         "NW" -> CompassDirectionScreen.NorthWest
         else -> throw IllegalArgumentException("No such compass direction $this")
     }
+
+fun CompassDirectionScreen.toDirectionScreen(): DirectionScreen =
+    when (this) {
+        CompassDirectionScreen.East -> DirectionScreen.Right
+        CompassDirectionScreen.North -> DirectionScreen.Up
+        CompassDirectionScreen.South -> DirectionScreen.Down
+        CompassDirectionScreen.West -> DirectionScreen.Left
+        else -> error("Direction ${this} not convertable to DirectionScreen")
+    }

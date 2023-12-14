@@ -1,5 +1,5 @@
 /**
- * Advent of Code 2023, Day 13:
+ * Advent of Code 2023, Day 13: Point of Incidence
  * Problem Description: https://adventofcode.com/2023/day/13
  */
 
@@ -8,6 +8,7 @@ package de.niemeyer.aoc2023
 import de.niemeyer.aoc.utils.Resources.resourceAsText
 import de.niemeyer.aoc.utils.executeAndCheck
 import de.niemeyer.aoc.utils.getClassName
+import de.niemeyer.aoc.utils.rotateRight
 
 fun main() {
     fun solve(input: String, smucks: Int = 0): Int =
@@ -51,12 +52,3 @@ fun mirrored(pattern: List<String>, smucks: Int = 0): Int =
                 .count { (a, b) -> a != b }
         }.let { if (smucks == it) idx + 1 else null }
     } ?: 0
-
-fun List<String>.rotateRight(): List<String> =
-    List(this.first().length) { col ->
-        buildString {
-            (size - 1 downTo 0).forEach { row ->
-                append(this@rotateRight[row][col])
-            }
-        }
-    }
