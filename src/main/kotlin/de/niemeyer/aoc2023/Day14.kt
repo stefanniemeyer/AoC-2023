@@ -161,4 +161,3 @@ fun printDish(round: Set<GridCellScreen>) {
         println()
     }
 }
-
