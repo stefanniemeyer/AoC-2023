@@ -10,6 +10,10 @@ import de.niemeyer.aoc.points.Point2D
 import de.niemeyer.aoc.utils.Resources.resourceAsArrayOfCharArray
 import de.niemeyer.aoc.utils.executeAndCheck
 import de.niemeyer.aoc.utils.getClassName
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 
 typealias Beam = Pair<Point2D, DirectionScreen>
 
@@ -43,8 +47,15 @@ fun main() {
         val lowerBeams = contraption.xRanges.map { Point2D(it, contraption.yMax + 1) to DirectionScreen.Up}
         val leftBeams = contraption.yRanges.map { Point2D(contraption.xMax - 1, it) to DirectionScreen.Right}
         val rightBeams = contraption.yRanges.map { Point2D(contraption.xMax + 1, it) to DirectionScreen.Left}
-        val best = listOf(topBeams, lowerBeams, leftBeams, rightBeams).flatten().maxOf { solve(contraption, it) }
-
+        val best: Int
+        runBlocking(Dispatchers.Default) {
+            val all = listOf(topBeams, lowerBeams, leftBeams, rightBeams).flatten().map { start ->
+                async {
+                    solve(contraption, start)
+                }
+            }.awaitAll()
+            best = all.max()
+        }
         return best
     }
 
