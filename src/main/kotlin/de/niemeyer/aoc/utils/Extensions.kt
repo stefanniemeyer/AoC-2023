@@ -2,6 +2,7 @@
 
 package de.niemeyer.aoc.utils
 
+import de.niemeyer.aoc.points.Point2D
 import java.math.BigInteger
 import kotlin.math.absoluteValue
 
@@ -77,6 +78,9 @@ fun Char.asLong(): Long =
 // (0, 3)
 fun Array<CharArray>.peer(posRow: Int, posCol: Int, offsetRow: Int, offsetCol: Int): Pair<Int, Int> =
     Pair((posRow + offsetRow) % size, (posCol + offsetCol) % first().size)
+
+operator fun Array<IntArray>.contains(p: Point2D): Boolean =
+    p.y in indices && p.x in first().indices
 
 infix fun IntRange.intersects(other: IntRange): Boolean =
     first <= other.last && last >= other.first

@@ -4,6 +4,7 @@ package de.niemeyer.aoc.points
 
 import de.niemeyer.aoc.direction.CompassDirectionCCS
 import de.niemeyer.aoc.direction.DirectionCCS
+import de.niemeyer.aoc.direction.DirectionScreen
 import kotlin.math.*
 
 interface Point {
@@ -33,11 +34,16 @@ data class Point2D(val x: Int, val y: Int) : Point {
 
     fun move(directionCCS: DirectionCCS): Point2D = this.moveTimes(directionCCS, 1)
 
+    fun move(directionScreen: DirectionScreen): Point2D = this.moveTimes(directionScreen, 1)
+
     fun moveTimes(compassDirectionCCS: CompassDirectionCCS, offset: Int): Point2D =
         this + compassDirectionCCS.offset * offset
 
     fun moveTimes(directionCCS: DirectionCCS, offset: Int): Point2D =
         this + directionCCS.offset * offset
+
+    fun moveTimes(directionScreen: DirectionScreen, offset: Int): Point2D =
+        this + directionScreen.offset * offset
 
     fun rotateLeft(): Point2D = rotate(90)
 
