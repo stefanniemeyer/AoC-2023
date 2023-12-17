@@ -43,10 +43,10 @@ fun main() {
     }
 
     fun part2(contraption: Contraption): Int {
-        val topBeams = contraption.xRanges.map { Point2D(it, contraption.yMin - 1) to DirectionScreen.Down}
-        val lowerBeams = contraption.xRanges.map { Point2D(it, contraption.yMax + 1) to DirectionScreen.Up}
-        val leftBeams = contraption.yRanges.map { Point2D(contraption.xMax - 1, it) to DirectionScreen.Right}
-        val rightBeams = contraption.yRanges.map { Point2D(contraption.xMax + 1, it) to DirectionScreen.Left}
+        val topBeams = contraption.xRanges.map { Point2D(it, contraption.yMin - 1) to DirectionScreen.Down }
+        val lowerBeams = contraption.xRanges.map { Point2D(it, contraption.yMax + 1) to DirectionScreen.Up }
+        val leftBeams = contraption.yRanges.map { Point2D(contraption.xMax - 1, it) to DirectionScreen.Right }
+        val rightBeams = contraption.yRanges.map { Point2D(contraption.xMax + 1, it) to DirectionScreen.Left }
         val best: Int
         runBlocking(Dispatchers.Default) {
             val all = listOf(topBeams, lowerBeams, leftBeams, rightBeams).flatten().map { start ->
@@ -74,32 +74,20 @@ fun main() {
     }
 }
 
-fun DirectionScreen.reflect(field: Field): DirectionScreen =
-    when (this) {
-        DirectionScreen.Down -> when (field) {
-            Field.SLASH -> DirectionScreen.Left
-            Field.BACKSLASH -> DirectionScreen.Right
-            else -> this
-        }
+fun DirectionScreen.reflect(field: Field): DirectionScreen {
+    val directionFieldMap = mapOf(
+        Pair(DirectionScreen.Down, Field.SLASH) to DirectionScreen.Left,
+        Pair(DirectionScreen.Down, Field.BACKSLASH) to DirectionScreen.Right,
+        Pair(DirectionScreen.Left, Field.SLASH) to DirectionScreen.Down,
+        Pair(DirectionScreen.Left, Field.BACKSLASH) to DirectionScreen.Up,
+        Pair(DirectionScreen.Right, Field.SLASH) to DirectionScreen.Up,
+        Pair(DirectionScreen.Right, Field.BACKSLASH) to DirectionScreen.Down,
+        Pair(DirectionScreen.Up, Field.SLASH) to DirectionScreen.Right,
+        Pair(DirectionScreen.Up, Field.BACKSLASH) to DirectionScreen.Left
+    )
 
-        DirectionScreen.Left -> when (field) {
-            Field.SLASH -> DirectionScreen.Down
-            Field.BACKSLASH -> DirectionScreen.Up
-            else -> this
-        }
-
-        DirectionScreen.Right -> when (field) {
-            Field.SLASH -> DirectionScreen.Up
-            Field.BACKSLASH -> DirectionScreen.Down
-            else -> this
-        }
-
-        DirectionScreen.Up -> when (field) {
-            Field.SLASH -> DirectionScreen.Right
-            Field.BACKSLASH -> DirectionScreen.Left
-            else -> this
-        }
-    }
+    return directionFieldMap[this to field] ?: this
+}
 
 enum class Field(val value: Char) {
     EMPTY('.'),
@@ -110,14 +98,7 @@ enum class Field(val value: Char) {
 }
 
 fun Char.toField(): Field =
-    when (this) {
-        '.' -> Field.EMPTY
-        '/' -> Field.SLASH
-        '\\' -> Field.BACKSLASH
-        '-' -> Field.HORIZONTAL
-        '|' -> Field.VERTICAL
-        else -> error("Conversion of '$this' to Field is not supported")
-    }
+    Field.entries.find { it.value == this } ?: error("Conversion of '$this' to Field is not supported")
 
 data class Contraption(
     val cavern: List<List<Field>>
