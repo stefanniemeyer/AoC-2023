@@ -1,5 +1,5 @@
 /**
- * Advent of Code 2023, Day 17:
+ * Advent of Code 2023, Day 17: Clumsy Crucible
  * Problem Description: https://adventofcode.com/2023/day/17
  */
 
@@ -16,25 +16,34 @@ fun searchPath(
     nextSteps: (DirectionScreen, Int) -> List<DirectionScreen>,
     validateDistance: (Int) -> Boolean
 ): Int {
+    val target = Point2D(grid.last().lastIndex, grid.lastIndex)
     val visited = mutableSetOf<State>()
     val queue = PriorityQueue<IndexedValue<State>>(compareBy { (cost, state) ->
-        cost - Point2D.ORIGIN.manhattanDistanceTo(state.position)
+        cost // - Point2D.ORIGIN.manhattanDistanceTo(state.position)
     })
-    val target = Point2D(grid.last().lastIndex, grid.lastIndex)
     queue.add(IndexedValue(0, State(Point2D.ORIGIN, DirectionScreen.Right, 0)))
-    while (!queue.isEmpty()) {
-        val (cost, state) = queue.remove()
-        if (state.position == target && validateDistance(state.distance)) return cost
-        if (!visited.add(state)) continue
-        nextSteps(state.direction, state.distance).forEach { direction ->
-            val stateCand = state.move(direction)
-//            if (stateCand.position.x in xRanges && stateCand.position.y in yRanges)
-            if (stateCand.position in grid)
-                queue.add(IndexedValue(cost + grid[stateCand.position.y][stateCand.position.x], stateCand))
+    while (queue.isNotEmpty()) {
+        val (cost, state) = queue.poll()
+//        println("pos: ${state.position} -> ${state.direction}   dist: ${state.distance}")
+        if (state.position == target) {
+            if (validateDistance(state.distance)) {
+//                println("FINAL pos: ${state.position} dir: ${state.direction}  distance ${state.distance}")
+                return cost
+            }
+//            println("INVALID distance in target pos: ${state.position} distance ${state.distance}")
+        }
+        if (visited.add(state)) {
+            nextSteps(state.direction, state.distance).forEach { direction ->
+                val stateCand = state.move(direction)
+                if (stateCand.position in grid) {
+//                    println("   cand: ${stateCand.position} -> ${stateCand.direction}   dist: ${stateCand.distance}")
+                    queue.add(IndexedValue(cost + grid[stateCand.position.y][stateCand.position.x], stateCand))
+                }
+            }
         }
     }
 
-    return Int.MAX_VALUE
+    error("No solution found")
 }
 
 fun main() {
@@ -56,7 +65,7 @@ fun main() {
 
     check(part2(testInput) == 94)
     check(part2(testInput2) == 71)
-    executeAndCheck(2, 0) { // 1186 to high
+    executeAndCheck(2, 1178) { // 1186 to high
         part2(puzzleInput)
     }
 }
