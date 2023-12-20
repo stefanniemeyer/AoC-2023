@@ -91,7 +91,7 @@ fun main() {
     }
 
     check(part2(testInput) == 167_409_079_868_000L)
-    executeAndCheck(2, 131029523269531L) {  // 298438603137531 to high
+    executeAndCheck(2, 131_029_523_269_531L) {
         part2(puzzleInput)
     }
 }
