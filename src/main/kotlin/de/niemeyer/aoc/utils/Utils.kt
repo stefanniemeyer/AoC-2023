@@ -51,3 +51,27 @@ fun <T> Iterable<T>.repeatInfinite(): Sequence<T> = sequence {
         yieldAll(this@repeatInfinite)
     }
 }
+
+/**
+ * Takes a list of base/modulo combinations and returns the lowest number for which the states coincide such that:
+ *
+ * for all i: state(i) == base_state(i).
+ *
+ * E.g. chineseRemainder(listOf(3L to 4L, 5L to 6L, 2L to 5L)) == 47
+ */
+fun chineseRemainder(values: List<Pair<Long, Long>>): Long {
+    if (values.isEmpty()) {
+        return 0L
+    }
+    var result = values[0].first
+    var leastCommon = values[0].second
+    for (i in 1 until values.size) {
+        val (base, modulo) = values[i]
+        val target = base % modulo
+        while (result % modulo != target) {
+            result += leastCommon
+        }
+        leastCommon = leastCommon.lcm(modulo)
+    }
+    return result
+}
