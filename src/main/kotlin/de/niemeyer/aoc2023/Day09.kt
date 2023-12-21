@@ -8,12 +8,7 @@ package de.niemeyer.aoc2023
 import de.niemeyer.aoc.utils.Resources.resourceAsListOfListOfLong
 import de.niemeyer.aoc.utils.executeAndCheck
 import de.niemeyer.aoc.utils.getClassName
-
-tailrec fun recursiveDiff(list: List<Long>, acc: MutableList<List<Long>> = mutableListOf()): List<List<Long>> {
-    acc.add(list)
-    val nextList = list.zipWithNext { a, b -> b - a }
-    return if (nextList.all { it == 0L }) acc else recursiveDiff(nextList, acc)
-}
+import de.niemeyer.aoc.utils.recursiveDiff
 
 fun solve(input: List<List<Long>>): Long =
     input.map { nums ->

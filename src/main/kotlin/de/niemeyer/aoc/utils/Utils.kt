@@ -87,3 +87,9 @@ fun chineseRemainder(rests: List<Long>, moduli: List<Long>): BigInteger {
 
     return sum % product
 }
+
+tailrec fun recursiveDiff(list: List<Long>, acc: MutableList<List<Long>> = mutableListOf()): List<List<Long>> {
+    acc.add(list)
+    val nextList = list.zipWithNext { a, b -> b - a }
+    return if (nextList.all { it == 0L }) acc else recursiveDiff(nextList, acc)
+}
