@@ -75,3 +75,15 @@ fun chineseRemainder(values: List<Pair<Long, Long>>): Long {
     }
     return result
 }
+
+fun chineseRemainder(rests: List<Long>, moduli: List<Long>): BigInteger {
+    val product = moduli.map { it.toBigInteger() }.reduce(BigInteger::times)
+    var sum = BigInteger.ZERO
+
+    for (i in rests.indices) {
+        val p = product / moduli[i].toBigInteger()
+        sum += rests[i].toBigInteger() * p * p.modInverse(moduli[i].toBigInteger())
+    }
+
+    return sum % product
+}

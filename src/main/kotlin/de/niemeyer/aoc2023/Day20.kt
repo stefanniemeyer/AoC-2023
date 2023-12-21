@@ -9,50 +9,12 @@ import de.niemeyer.aoc.utils.Resources.resourceAsList
 import de.niemeyer.aoc.utils.*
 
 fun main() {
-//    fun testModules(): Long {
-//        val btn = Button("button", listOf("broadcaster"))
-//        println(btn.process(Pulse.LOW, "VOID"))
-//        println(btn.process(Pulse.LOW, "VOID"))
-//        println()
-//
-//        val rcv = Receiver("rx", listOf())
-//        println(rcv.process(Pulse.LOW, "i1"))
-//        println(rcv.process(Pulse.HIGH, "i2"))
-//        println()
-//
-//        val bc = Broadcaster("broadcaster", listOf("a", "b"))
-//        println(bc.process(Pulse.LOW, "button"))
-//        println(bc.process(Pulse.LOW, "button"))
-//        println(bc.process(Pulse.HIGH, "button"))
-//        println(bc.process(Pulse.HIGH, "button"))
-//        println(bc.process(Pulse.LOW, "button"))
-//        println()
-//
-//        val ff = FlipFlop("ff", listOf("o1", "o2"))
-//        println(ff.process(Pulse.HIGH, "broadcaster"))
-//        println(ff.process(Pulse.LOW, "broadcaster"))
-//        println(ff.process(Pulse.HIGH, "broadcaster"))
-//        println(ff.process(Pulse.LOW, "broadcaster"))
-//        println(ff.process(Pulse.LOW, "broadcaster"))
-//        println(ff.process(Pulse.HIGH, "broadcaster"))
-//        println(ff.process(Pulse.HIGH, "broadcaster"))
-//        println()
-//
-//        val con = Conjunction("con", listOf("o1", "o2"))
-//        con.incoming = listOf("i1", "i2")
-//        println(con.process(Pulse.HIGH, "i1"))
-//        println(con.process(Pulse.HIGH, "i2"))
-//        println(con.process(Pulse.LOW, "i1"))
-//        return 0L
-//    }
-
     fun part1(input: List<String>): Long {
         val scheduler = Scheduler(input)
-        val loops = 1000
-        repeat(loops) {
+        repeat(1000) {
             scheduler.pressButton()
         }
-        val x= scheduler.getPulseCounts()
+        val x = scheduler.getPulseCounts()
         val y = x.map { it.getValue(Pulse.LOW) to it.getValue(Pulse.HIGH) }
         val lowCount = y.sumOf { it.first }
         val highCount = y.sumOf { it.second }
@@ -60,8 +22,15 @@ fun main() {
         return res
     }
 
-    fun part2(input: List<String>): Long =
-        TODO()
+    fun part2(input: List<String>): Long {
+        val scheduler = Scheduler(input)
+        while (true) {
+            scheduler.pressButton()
+            if (scheduler.receiverGotLow()) break
+        }
+        val x = scheduler.getCycles()
+        return x.product()
+    }
 
     val name = getClassName()
     val testInput = resourceAsList(fileName = "${name}_test.txt")
@@ -76,14 +45,19 @@ fun main() {
     }
 
 //    check(part2(testInput) == 0)
-//    executeAndCheck(2, 0) {
-//        part2(puzzleInput)
-//    }
+    executeAndCheck(2, 217_317_393_039_529L) {
+        part2(puzzleInput)
+    }
 }
 
 class Scheduler(val input: List<String>) {
     private var modules = mutableMapOf<String, Module>()
-    private var button: Button? = null
+    private val button: Button
+    private val receiver: Receiver?
+    private var receiverIngoing: String = ""
+    private var rxIndirectInputModules: List<String> = emptyList()
+    private var rxIndirectCycles: MutableMap<String, Long> = mutableMapOf()
+    private var btnPressed = 0
 
     init {
         val regex = """([&%]?)(\w+) -> (.*)""".toRegex()
@@ -105,7 +79,7 @@ class Scheduler(val input: List<String>) {
                 }
             }
         }
-        button = modules.values.firstOrNull { it is Button } as Button?
+        button = (modules.values.firstOrNull { it is Button } ?: error("no Button found")) as Button
         val incommings = modules.entries.mapNotNull { mod ->
             mod.value.outgoing.map { con -> con to mod.key }.takeIf { it.isNotEmpty() }
         }.flatten().groupBy({ it.first }, { it.second })
@@ -115,17 +89,39 @@ class Scheduler(val input: List<String>) {
                 module.incoming = it.value
             }
         }
+        receiver = modules.values.firstOrNull { it is Receiver } as Receiver?
+        if (receiver != null) {
+            val rxInput = modules.values.find { receiver.moduleName in it.outgoing }
+            check(rxInput is Conjunction)
+            receiverIngoing = rxInput.moduleName
+            rxIndirectInputModules = rxInput.incoming
+        }
     }
 
     fun getPulseCounts() =
-        modules.map { it.value.pulseCount}
+        modules.map { it.value.pulseCount }
+
+    fun receiverGotLow(): Boolean =
+        rxIndirectCycles.size == rxIndirectInputModules.size    // not all needed cycles detected
+
+    fun getCycles(): List<Long> =
+        rxIndirectCycles.values.toList()
 
     fun pressButton() {
-        val signals = button?.process() ?: emptyList()
+        val signals = button.process()
         val queue = ArrayDeque<Signal>(signals)
+        btnPressed++
+        var rounds = 0
         while (queue.isNotEmpty()) {
             val signal = queue.removeFirst()
+            rounds++
             val mod = modules.getValue(signal.target)
+            if (signal.source in rxIndirectInputModules && signal.target == receiverIngoing && signal.pulse == Pulse.HIGH) {
+                log("$btnPressed;$rounds;${signal.source}")
+                if (!rxIndirectCycles.containsKey(signal.source)) {
+                    rxIndirectCycles[signal.source] = btnPressed.toLong()
+                }
+            }
             queue += mod.process(signal.pulse, signal.source)
         }
     }
@@ -171,7 +167,10 @@ class Button(moduleName: String, outgoing: List<String>) : Module(
 class Receiver(moduleName: String, outgoing: List<String>) : Module(
     moduleName, outgoing
 ) {
+    var receivedLow = false
+
     override fun process(pulse: Pulse, source: String): List<Signal> {
+        if (pulse == Pulse.LOW) receivedLow = true
         log("RECV $moduleName ${pulse.text} <- $source", 2)
         return emptyList()
     }
