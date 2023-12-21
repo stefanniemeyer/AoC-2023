@@ -94,6 +94,15 @@ infix fun IntRange.union(other: IntRange): IntRange =
 fun IntRange.size(): Int =
     last - first + 1
 
+inline fun <T> List<T>.splitBy(predicate: (T) -> Boolean): List<List<T>> {
+    return (listOf(-1) + indices.filter { predicate(get(it)) } + listOf(size))
+        .zipWithNext { from, to -> subList(from + 1, to) }
+}
+
+fun List<String>.splitByBlankLines(): List<List<String>> {
+    return splitBy { it.isBlank() }
+}
+
 /**
  * lcm / gcd for Int
  */
