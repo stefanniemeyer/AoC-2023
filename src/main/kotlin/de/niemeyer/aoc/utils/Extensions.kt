@@ -82,6 +82,22 @@ fun Array<CharArray>.peer(posRow: Int, posCol: Int, offsetRow: Int, offsetCol: I
 operator fun Array<IntArray>.contains(p: Point2D): Boolean =
     p.y in indices && p.x in first().indices
 
+operator fun <T> Array<Array<T>>.get(point: Point2D): T {
+    return this[point.y][point.x]
+}
+
+operator fun <T> Array<Array<T>>.set(point: Point2D, value: T) {
+    this[point.y][point.x] = value
+}
+
+operator fun Array<IntArray>.get(point: Point2D): Int {
+    return this[point.y][point.x]
+}
+
+operator fun Array<IntArray>.set(point: Point2D, value: Int) {
+    this[point.y][point.x] = value
+}
+
 infix fun IntRange.intersects(other: IntRange): Boolean =
     first <= other.last && last >= other.first
 
