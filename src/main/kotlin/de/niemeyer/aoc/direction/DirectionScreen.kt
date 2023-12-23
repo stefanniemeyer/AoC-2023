@@ -71,5 +71,13 @@ fun String.arrowToDirectionScreen(): DirectionScreen =
         else -> throw IllegalArgumentException("No such arrow direction '$this'")
     }
 
+fun DirectionScreen.toArrow(): String =
+    when (this) {
+        DirectionScreen.Up -> "^"
+        DirectionScreen.Right -> ">"
+        DirectionScreen.Down -> "v"
+        DirectionScreen.Left -> "<"
+    }
+
 fun DirectionScreen.opposite(): DirectionScreen =
     turnLeft.turnLeft
