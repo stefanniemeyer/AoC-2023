@@ -23,6 +23,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0-RC") {
         because("Day 05")
     }
+    implementation("org.jgrapht:jgrapht-core:1.5.2") {
+        because("Day 25 min-cut")
+    }
+
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
     testImplementation("org.assertj:assertj-core:3.23.1")
