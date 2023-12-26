@@ -35,7 +35,7 @@ fun main() {
 }
 
 class Day23() {
-    lateinit var snowIsland: SnowIsland
+    private lateinit var snowIsland: SnowIsland
 
     constructor(input: List<String>) : this() {
         snowIsland = SnowIsland.of(input)
@@ -85,7 +85,7 @@ class Day23() {
         return longestPath(start, target, conjGraph)
     }
 
-    fun longestPath(
+    private fun longestPath(
         start: GridCellScreen,
         target: GridCellScreen,
         graph: HashMap<GridCellScreen, HashSet<Pair<GridCellScreen, Int>>>
@@ -98,12 +98,12 @@ class Day23() {
             val pos = path.last()
             val neighbours = graph[pos] ?: error("What happened?")
             val nextPos = neighbours.toList().filterNot { it.first in path }
-            nextPos.forEach { (npos, ndist) ->
-                if (npos == target && (dist + ndist > solution)) {
-                    solution = dist + ndist
+            nextPos.forEach { (nextPos, nextDist) ->
+                if (nextPos == target && (dist + nextDist > solution)) {
+                    solution = dist + nextDist
 //                    println("TARGET: $solution")
                 } else {
-                    queue += IndexedValue(dist + ndist, path + npos)
+                    queue += IndexedValue(dist + nextDist, path + nextPos)
                 }
             }
         }
@@ -111,7 +111,7 @@ class Day23() {
         return solution
     }
 
-    fun bfs(slopes: Boolean): Int {
+    private fun bfs(slopes: Boolean): Int {
         val start = snowIsland.graph.keys.find { it.row == snowIsland.rowMin } ?: error("no start point found")
         val target = snowIsland.graph.keys.find { it.row == snowIsland.rowMax } ?: error("no end point found")
         val queue = ArrayDeque<IndexedValue<List<GridCellScreen>>>()
@@ -127,7 +127,7 @@ class Day23() {
 
             val pathElement = snowIsland.graph.getValue(pos)
             val nextPosCand =
-                if (pathElement == null || slopes == false) {
+                if (pathElement == null || !slopes) {
                     pos.axisNeighbors
                 } else {
                     listOf(pos + pathElement.offset.toGridCellScreen())
@@ -148,8 +148,8 @@ class SnowIsland(
 ) {
     val rowMin = if (graph.isEmpty()) 0 else graph.keys.minOf { it.row }
     val rowMax = if (graph.isEmpty()) 0 else graph.keys.maxOf { it.row }
-    val columnMin = if (graph.isEmpty()) 0 else graph.keys.minOf { it.column }
-    val columnMax = if (graph.isEmpty()) 0 else graph.keys.maxOf { it.column }
+    private val columnMin = if (graph.isEmpty()) 0 else graph.keys.minOf { it.column }
+    private val columnMax = if (graph.isEmpty()) 0 else graph.keys.maxOf { it.column }
 
     @Suppress("unused")
     fun printExisting() {
@@ -157,7 +157,7 @@ class SnowIsland(
             for (column in columnMin..columnMax) {
                 val cell = GridCellScreen(row, column)
                 if (graph.containsKey(cell)) {
-                    val path = graph.get(cell)
+                    val path = graph[cell]
                     if (path == null) printColored(".", AnsiColor.BLUE)
                     else printColored(path.toArrow(), AnsiColor.RED)
                 } else print('#')

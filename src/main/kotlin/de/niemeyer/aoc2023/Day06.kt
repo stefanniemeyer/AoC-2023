@@ -19,7 +19,7 @@ fun main() {
         }.let { (times, durations) ->
             times.zip(durations)
         }.map { (time, duration) ->
-            (1 ..< time).map { d ->
+            (1..<time).map { d ->
                 d * (time - d)
             }.count { it > duration }
         }.toList().product()
@@ -29,7 +29,7 @@ fun main() {
             line.filter(Char::isDigit).toLong()
         }.let { it.first() to it.last() }
 
-        return (1 ..< time).map { d ->
+        return (1..<time).map { d ->
             d * (time - d)
         }.count { it > duration }
     }

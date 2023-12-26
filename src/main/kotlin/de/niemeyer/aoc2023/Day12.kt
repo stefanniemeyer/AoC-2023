@@ -12,20 +12,20 @@ import de.niemeyer.aoc.utils.getClassName
 
 fun main() {
     fun part1(input: List<String>): Long =
-        input.map { line ->
+        input.sumOf { line ->
             val records = line.substringBefore(" ")
             val groups = line.substringAfter(" ").split(",").map(String::toInt)
             findOrder(groups, records)
-        }.sum()
+        }
 
     fun part2(input: List<String>): Long =
-        input.map { line ->
+        input.sumOf { line ->
             val records = line.substringBefore(" ")
             val groups = line.substringAfter(" ").split(",").map(String::toInt)
             val records5 = List(5) { records }.joinToString("?")
             val groups5 = List(5) { groups }.flatten()
             findOrder(groups5, records5)
-        }.sum()
+        }
 
     val name = getClassName()
     val testInput = resourceAsList(fileName = "${name}_test.txt")
@@ -55,8 +55,6 @@ fun findOrder(groups: List<Int>, record: String): Long {
         '.' -> findOrder(groups, restRecord)
         '#' -> getOrder(groups, record).also { cache[groups to record] = it }
         '?' -> findOrder(groups, restRecord) + getOrder(groups, record).also { cache[groups to record] = it }
-        // findOrder(groups, restRecord) act as if '?' was a '.'
-        // getOrder(groups, record)      act as if '?' was a '#'
         else -> error("Unexpected Character '${record.first()}'")
     }
 }

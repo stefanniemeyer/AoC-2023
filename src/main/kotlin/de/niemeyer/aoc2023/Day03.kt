@@ -18,8 +18,8 @@ fun main() {
             !v.isDigit()
         }
         val valid = engine.engine.filter { part ->
-            part.fields.any {
-                it.neighbors.any {
+            part.fields.any { field ->
+                field.neighbors.any {
                     symbols.containsKey(it)
                 }
             }
@@ -40,11 +40,7 @@ fun main() {
                 }
                 (x to part.partId).takeIf { x != null }
             }.toSet().toList()
-            if (!validNumber.isEmpty()) {
-                validNumber
-            } else {
-                null
-            }
+            validNumber.ifEmpty { null }
         }.flatten()
         val sum = valid
             .groupBy { it.first }
@@ -84,7 +80,7 @@ data class RawSchematic(val rawSchematic: Map<GridCellScreen, Char>) {
     companion object {
         fun of(input: List<String>, ignoreChar: Char = '.'): RawSchematic {
             val schema = input.mapIndexed { row, line ->
-                line.mapIndexedNotNull() { column, c ->
+                line.mapIndexedNotNull { column, c ->
                     if (c == ignoreChar) {
                         null
                     } else {
@@ -119,7 +115,7 @@ data class Engine(val engine: List<PartNumber>) {
                         }
                     } else if (c.isDigit()) {
                         collecting = true
-                        digits = "${c}"
+                        digits = "$c"
                         fields.clear()
                         fields.add(GridCellScreen(row, column))
                     }

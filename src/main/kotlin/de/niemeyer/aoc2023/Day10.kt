@@ -38,20 +38,16 @@ fun ignoreStartPipe(start: PipeContainer, grid: PipeGrid): Boolean {
 }
 
 fun main() {
-    fun part1(input: List<String>): Int {
+    fun solve(input: List<String>, areaEnclosed: Boolean = false): Int {
         val grid = PipeGrid.of(input)
-        val start = grid.gridMap.values.filter { it.value == Pipe.Start }.first()
+        val start = grid.gridMap.values.first { it.value == Pipe.Start }
         val loopPath = dfs(grid.gridMap, start)
         val loopGrid = PipeGrid(grid.gridMap.filter { it.key in loopPath })
 
-        return loopGrid.gridMap.size / 2
-    }
+        if (!areaEnclosed) {
+            return loopGrid.gridMap.size / 2
+        }
 
-    fun part2(input: List<String>): Int {
-        val grid = PipeGrid.of(input)
-        val start = grid.gridMap.values.filter { it.value == Pipe.Start }.first()
-        val loopPath = dfs(grid.gridMap, start)
-        val loopGrid = PipeGrid(grid.gridMap.filter { it.key in loopPath })
         println(loopGrid.toPrintableStringWithDefault())
         val ignoreTiles = mutableListOf(Pipe.NorthWest, Pipe.NorthEast, Pipe.Horizontal)
         if (ignoreStartPipe(start, loopGrid)) {
@@ -74,6 +70,12 @@ fun main() {
 
         return insideCount
     }
+
+    fun part1(input: List<String>): Int =
+        solve(input)
+
+    fun part2(input: List<String>): Int =
+        solve(input, areaEnclosed = true)
 
     val name = getClassName()
     val testInput = resourceAsList(fileName = "${name}_test.txt")
@@ -150,12 +152,6 @@ sealed class Pipe {
             SouthEast -> "┌"             //"F"
             SouthWest -> "┐"             //"7"
             None -> "@"             //"@"
-//            Waagerechte Linien: ─ (U+2500)
-//            Senkrechte Linien: │ (U+2502)
-//            Obere linke Ecke: ┌ (U+250C)
-//            Obere rechte Ecke: ┐ (U+2510)
-//            Untere linke Ecke: └ (U+2514)
-//            Untere rechte Ecke: ┘ (U+2518)
         }
 
     object Start : Pipe() {

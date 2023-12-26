@@ -23,7 +23,7 @@ fun main() {
         }
         val countGames = games.map { 1 to it.countNumbersWon }.toMutableList()
         countGames.forEachIndexed { idx, v ->
-            ((idx + 1) .. (idx + v.second)).forEach {
+            ((idx + 1)..(idx + v.second)).forEach {
                 countGames[it] = (v.first + countGames[it].first) to countGames[it].second
             }
         }
@@ -46,7 +46,7 @@ fun main() {
 }
 
 data class ScratchCardGame(val gameId: Int, val winning: Set<Int>, val scratchCard: Set<Int>) {
-    val numbersWon = scratchCard.intersect(winning)
+    private val numbersWon = scratchCard.intersect(winning)
     val countNumbersWon = numbersWon.size
 
     companion object {

@@ -56,10 +56,10 @@ fun main() {
 }
 
 class Day21(val input: List<String>) {
-    var height: Int = 0
-    var width: Int = 0
-    var rocks: Set<GridCellScreen> = emptySet()
-    var startPos: GridCellScreen = GridCellScreen.ORIGIN
+    private var height = 0
+    private var width = 0
+    private var rocks = emptySet<GridCellScreen>()
+    private var startPos = GridCellScreen.ORIGIN
 
     fun solve(maxSteps: List<Int>): List<Long> {
         height = input.size
@@ -71,16 +71,16 @@ class Day21(val input: List<String>) {
         return dfs(maxSteps)
     }
 
-    fun isRock(pos: GridCellScreen): Boolean {
+    private fun isRock(pos: GridCellScreen): Boolean {
         val newPos = GridCellScreen(pos.row.mod(height), pos.column.mod(width))
         return rocks.contains(newPos)
     }
 
-    fun dfs(relevantSteps: List<Int>): List<Long> {
+    private fun dfs(relevantSteps: List<Int>): List<Long> {
         val foundPaths: MutableSet<GridCellScreen> = mutableSetOf()
         val visited = mutableSetOf<GridCellScreen>()
-        val queue = PriorityQueue<IndexedValue<GridCellScreen>>(compareBy({ it.index }))
-        val maxSteps = relevantSteps.sorted().last()
+        val queue = PriorityQueue<IndexedValue<GridCellScreen>>(compareBy { it.index })
+        val maxSteps = relevantSteps.maxOf { it }
         val evenOdd = maxSteps % 2
         visited += startPos
         queue += IndexedValue(0, startPos)

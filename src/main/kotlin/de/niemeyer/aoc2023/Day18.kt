@@ -21,7 +21,12 @@ fun List<Pair<DirectionScreen, Int>>.solve() =
     }.sum().absoluteValue + sumOf { it.second } / 2 + 1
 
 private fun String.toDigLine(): Pair<DirectionScreen, Int> {
-    val dir = listOf(DirectionScreen.Right, DirectionScreen.Down, DirectionScreen.Left, DirectionScreen.Up)[get(lastIndex - 1).digitToInt()]
+    val dir = listOf(
+        DirectionScreen.Right,
+        DirectionScreen.Down,
+        DirectionScreen.Left,
+        DirectionScreen.Up
+    )[get(lastIndex - 1).digitToInt()]
     return dir to this.substring(2..6).toInt(16)
 }
 

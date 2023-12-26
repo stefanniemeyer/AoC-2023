@@ -18,8 +18,7 @@ fun main() {
         ratings.forEach { rating ->
             var workflow = workflows.getValue("in")
             while (true) {
-                val target = workflow.probe(rating)
-                if (target == null) error("What happend?")
+                val target = workflow.probe(rating) ?: error("What happened?")
                 when (target) {
                     "A" -> {
                         accepted.add(rating)

@@ -30,8 +30,8 @@ val dishCache = mutableMapOf<String, Int>()
 
 fun Set<GridCellScreen>.compress(facing: DirectionScreen): Set<GridCellScreen> {
     val result = mutableSetOf<GridCellScreen>()
-    val rowProg = IntProgression.fromClosedRange(1, height, 1)
-    val columnProg = IntProgression.fromClosedRange(1, width, 1)
+    val rowProgression = IntProgression.fromClosedRange(1, height, 1)
+    val columnProgression = IntProgression.fromClosedRange(1, width, 1)
     val transFunc: (Int, Int) -> GridCellScreen
 
     when (facing) {
@@ -41,9 +41,9 @@ fun Set<GridCellScreen>.compress(facing: DirectionScreen): Set<GridCellScreen> {
         DirectionScreen.Left -> transFunc = { r, c -> GridCellScreen(width - c + 1, r) }
     }
 
-    for (column in columnProg) {
+    for (column in columnProgression) {
         var emptyFields = 0
-        for (row in rowProg) {
+        for (row in rowProgression) {
             val curr = transFunc(row, column)
             if (cubeRocks.contains(curr)) {     // cube rock found
                 emptyFields = 0
@@ -77,11 +77,11 @@ fun solve2(input: List<String>, cycles: Int = 0): Long {
         while (absolvedCycles < cycles) {
             val beforeHash = r.sortedWith(compareBy { it.toString() }).toString()
 //            println("hash $beforeHash")
-            var doneInRound = -1
+            var doneInRound: Int
             if (caching && dishCache.containsKey(beforeHash)) {
                 doneInRound = dishCache.getValue(beforeHash)
                 val loopLength = absolvedCycles - doneInRound + 1
-                println("    after $absolvedCycles done in round $doneInRound loopLenght $loopLength")
+                println("    after $absolvedCycles done in round $doneInRound loopLength $loopLength")
                 absolvedCycles = cycles - ((cycles - absolvedCycles) % loopLength)
                 println("  > fast forward to $absolvedCycles")
                 caching = false
@@ -94,19 +94,19 @@ fun solve2(input: List<String>, cycles: Int = 0): Long {
                 .compress(DirectionScreen.Down)
                 .compress(DirectionScreen.Right)
             absolvedCycles++
-            dishCache.put(beforeHash, absolvedCycles)
+            dishCache[beforeHash] = absolvedCycles
             r = after
         }
     }
-    val rowProg = IntProgression.fromClosedRange(1, height, 1)
-    val columnProg = IntProgression.fromClosedRange(1, width, 1)
+    val rowProgression = IntProgression.fromClosedRange(1, height, 1)
+    val columnProgression = IntProgression.fromClosedRange(1, width, 1)
 
 //    printDish(round)
 //    println()
     var res = 0L
-    for (row in rowProg) {
+    for (row in rowProgression) {
         var roundInRow = 0
-        for (column: Int in columnProg) {
+        for (column: Int in columnProgression) {
             if (r.contains(GridCellScreen(row, column))) {
                 roundInRow++
             }
@@ -119,14 +119,6 @@ fun solve2(input: List<String>, cycles: Int = 0): Long {
 }
 
 fun main() {
-//    fun solve(input: List<String>): Long =
-//        input.rotateLeft().map { row ->
-//            row.split('#').map { it.compress() }.joinToString("#")
-//        }.rotateRight()
-//            .reversed().mapIndexed { idx, row ->
-//                row.count('O'::equals) * (idx + 1L)
-//            }.sum()
-
     fun part1(input: List<String>): Long = solve2(input)
 
     fun part2(input: List<String>): Long = solve2(input, 1_000_000_000)

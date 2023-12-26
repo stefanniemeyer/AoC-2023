@@ -71,7 +71,7 @@ class Scheduler(val input: List<String>) {
                 "&" -> modules.put(moduleName, Conjunction(moduleName, outgoing))
                 else -> {
                     if (moduleName == "broadcaster") {
-                        modules.put(moduleName, Broadcaster(moduleName, outgoing))
+                        modules[moduleName] = Broadcaster(moduleName, outgoing)
                         modules.put("button", Button("button", listOf(moduleName)))
                     } else {
                         modules.put(moduleName, Receiver(moduleName, outgoing))
@@ -80,10 +80,10 @@ class Scheduler(val input: List<String>) {
             }
         }
         button = (modules.values.firstOrNull { it is Button } ?: error("no Button found")) as Button
-        val incommings = modules.entries.mapNotNull { mod ->
+        val incoming = modules.entries.mapNotNull { mod ->
             mod.value.outgoing.map { con -> con to mod.key }.takeIf { it.isNotEmpty() }
         }.flatten().groupBy({ it.first }, { it.second })
-        incommings.forEach {
+        incoming.forEach {
             val module = modules.getOrPut(it.key) { Receiver(it.key, emptyList()) }
             if (module is Conjunction) {
                 module.incoming = it.value
@@ -109,7 +109,7 @@ class Scheduler(val input: List<String>) {
 
     fun pressButton() {
         val signals = button.process()
-        val queue = ArrayDeque<Signal>(signals)
+        val queue = ArrayDeque(signals)
         btnPressed++
         var rounds = 0
         while (queue.isNotEmpty()) {
@@ -167,7 +167,7 @@ class Button(moduleName: String, outgoing: List<String>) : Module(
 class Receiver(moduleName: String, outgoing: List<String>) : Module(
     moduleName, outgoing
 ) {
-    var receivedLow = false
+    private var receivedLow = false
 
     override fun process(pulse: Pulse, source: String): List<Signal> {
         if (pulse == Pulse.LOW) receivedLow = true
@@ -228,8 +228,8 @@ class FlipFlop(moduleName: String, outgoing: List<String>) : Module(
 class Conjunction(moduleName: String, outgoing: List<String>) : Module(
     moduleName, outgoing
 ) {
-    val pulseMemory = mutableMapOf<String, Pulse>()
-    var incoming: List<String> = emptyList()
+    private val pulseMemory = mutableMapOf<String, Pulse>()
+    var incoming = emptyList<String>()
         set(inMods) {
             field = inMods
             inMods.forEach { pulseMemory[it] = Pulse.LOW }

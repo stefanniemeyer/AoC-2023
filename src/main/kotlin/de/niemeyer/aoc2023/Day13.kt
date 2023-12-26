@@ -15,11 +15,11 @@ fun main() {
         input
             .split("\n\n")
             .map { it.trim().lines() }
-            .map { pattern ->
+            .sumOf { pattern ->
                 val horizontal = mirrored(pattern, smucks)
                 val vertical = mirrored(pattern.rotateRight(), smucks)
                 horizontal * 100 + vertical
-            }.sum()
+            }
 
     fun part1(input: String): Int = solve(input)
 
@@ -42,8 +42,8 @@ fun main() {
 
 fun mirrored(pattern: List<String>, smucks: Int = 0): Int =
     (0..<pattern.lastIndex).firstNotNullOfOrNull { idx ->
-        (0..idx).map { mirrIdx ->
-            idx - mirrIdx to idx + mirrIdx + 1
+        (0..idx).map { mirrorIdx ->
+            idx - mirrorIdx to idx + mirrorIdx + 1
         }.filterNot { (_, down) ->
             (down > pattern.lastIndex)
         }.sumOf { (up, down) ->

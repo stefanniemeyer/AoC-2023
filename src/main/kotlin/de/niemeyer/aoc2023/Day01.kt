@@ -23,9 +23,9 @@ fun main() {
                 .mapNotNull { part ->
                     nums.firstOrNull { part.startsWith(it.value) }?.index
                 }
-        }.map { digitsFound ->
+        }.sumOf { digitsFound ->
             10 * digitsFound.first() + digitsFound.last()
-        }.sum()
+        }
 
     fun part1(input: List<String>): Int =
         addFirstAndLast(input, digits)

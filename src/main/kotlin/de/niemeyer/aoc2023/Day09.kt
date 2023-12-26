@@ -11,13 +11,13 @@ import de.niemeyer.aoc.utils.getClassName
 import de.niemeyer.aoc.utils.recursiveDiff
 
 fun solve(input: List<List<Long>>): Long =
-    input.map { nums ->
+    input.sumOf { nums ->
         recursiveDiff(nums).map { it.last() }
             .reversed()
             .fold(0L) { acc, num ->
                 num + acc
             }
-    }.sum()
+    }
 
 fun main() {
     fun part1(input: List<List<Long>>): Long =

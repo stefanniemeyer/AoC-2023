@@ -119,7 +119,7 @@ data class Contraption(
         }
     }
 
-    fun Point2D.inside() =
+    private fun Point2D.inside() =
         x in xRanges && y in yRanges
 
     fun moveBeam(beam: Beam): List<Beam> {
@@ -127,8 +127,7 @@ data class Contraption(
         val newPos = pos + dir.offset
 
         if (!newPos.inside()) return emptyList()
-        val field = cavern[newPos.y][newPos.x]
-        return when (field) {
+        return when (val field = cavern[newPos.y][newPos.x]) {
             Field.EMPTY -> listOf(newPos to dir)
 
             Field.SLASH,

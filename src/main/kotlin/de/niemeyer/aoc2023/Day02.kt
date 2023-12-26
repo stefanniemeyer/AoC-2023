@@ -48,14 +48,15 @@ enum class COLOR {
 }
 
 data class Game(val id: Int, val cubes: List<Cube>) {
-    val maxRed: Int
+    private val maxRed: Int
         get() = cubes.maxOf { it.red }
 
-    val maxGreen: Int
+    private val maxGreen: Int
         get() = cubes.maxOf { it.green }
 
-    val maxBlue: Int
+    private val maxBlue: Int
         get() = cubes.maxOf { it.blue }
+
     val power: Int
         get() = maxRed * maxGreen * maxBlue
 
