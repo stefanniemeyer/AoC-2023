@@ -13,45 +13,53 @@ import java.util.PriorityQueue
 
 fun searchPath(
     grid: Array<IntArray>,
-    nextSteps: (DirectionScreen, Int) -> List<DirectionScreen>,
-    validateDistance: (Int) -> Boolean
+    minStepsAfterTurn: Int,
+    maxStepsBeforeTurn: Int,
 ): Int {
     val target = Point2D(grid.last().lastIndex, grid.lastIndex)
     val visited = mutableSetOf<State>()
-    val queue = PriorityQueue<IndexedValue<State>>(compareBy { (cost, state) ->
-        cost // - Point2D.ORIGIN.manhattanDistanceTo(state.position)
-    })
+    val queue = PriorityQueue<IndexedValue<State>>(compareBy { it.index })
     queue.add(IndexedValue(0, State(Point2D.ORIGIN, DirectionScreen.Right, 0)))
     while (queue.isNotEmpty()) {
         val (cost, state) = queue.poll()
-//        println("pos: ${state.position} -> ${state.direction}   dist: ${state.distance}")
         if (state.position == target) {
-            if (validateDistance(state.distance)) {
-//                println("FINAL pos: ${state.position} dir: ${state.direction}  distance ${state.distance}")
-                return cost
-            }
-//            println("INVALID distance in target pos: ${state.position} distance ${state.distance}")
+            return cost
         }
-        if (visited.add(state)) {
-            nextSteps(state.direction, state.distance).forEach { direction ->
-                val stateCand = state.move(direction)
-                if (stateCand.position in grid) {
-//                    println("   cand: ${stateCand.position} -> ${stateCand.direction}   dist: ${stateCand.distance}")
-                    queue.add(IndexedValue(cost + grid[stateCand.position.y][stateCand.position.x], stateCand))
+        if (!visited.add(state)) {
+            continue
+        }
+        if (state.distance < maxStepsBeforeTurn) {
+            val stateCand = state.move(state.direction)
+            if (stateCand.position in grid) {
+                queue.add(IndexedValue(cost + grid[stateCand.position.y][stateCand.position.x], stateCand))
+            }
+        }
+
+        fun addForTurn(direction: DirectionScreen) {
+            var stateCand = state
+            var newCost = cost
+            repeat(minStepsAfterTurn) {
+                stateCand = stateCand.move(direction)
+                if (stateCand.position !in grid) {
+                    // we can not move the number of required steps
+                    return
                 }
+                newCost += grid[stateCand.position.y][stateCand.position.x]
             }
+            queue.add(IndexedValue(newCost, State(stateCand.position, direction, minStepsAfterTurn)))
         }
+        addForTurn(state.direction.turnRight)
+        addForTurn(state.direction.turnLeft)
     }
 
     error("No solution found")
 }
 
 fun main() {
-    fun part1(input: Array<IntArray>): Int =
-        searchPath(input, ::nextStepsNormal, validateDistance = { true })
+    fun part1(input: Array<IntArray>): Int = searchPath(input, 1, 3)
 
     fun part2(input: Array<IntArray>): Int =
-        searchPath(input, ::nextStepsUltra, validateDistance = { it >= 4 }).also { println("res=$it") }
+        searchPath(input, 4, 10)
 
     val name = getClassName()
     val testInput = resourceAsArrayOfIntArray(fileName = "${name}_test.txt")
@@ -65,23 +73,10 @@ fun main() {
 
     check(part2(testInput) == 94)
     check(part2(testInput2) == 71)
-    executeAndCheck(2, 1178) { // 1186 to high
+    executeAndCheck(2, 1_178) {
         part2(puzzleInput)
     }
 }
-
-fun nextStepsNormal(direction: DirectionScreen, distance: Int): List<DirectionScreen> =
-    when {
-        (distance < 3) -> listOf(direction, direction.turnLeft, direction.turnRight)
-        else -> listOf(direction.turnLeft, direction.turnRight)
-    }
-
-fun nextStepsUltra(direction: DirectionScreen, distance: Int): List<DirectionScreen> =
-    when {
-        (distance < 4) -> listOf(direction)
-        (distance < 10) -> listOf(direction, direction.turnLeft, direction.turnRight)
-        else -> listOf(direction.turnLeft, direction.turnRight)
-    }
 
 data class State(val position: Point2D, val direction: DirectionScreen, val distance: Int)
 
