@@ -4,7 +4,6 @@ package de.niemeyer.aoc.utils
 
 import de.niemeyer.aoc.points.Point2D
 import java.io.File
-import java.net.URI
 
 typealias Point2DBooleanMap = Map<Point2D, Boolean>
 typealias Point2DIntMap = Map<Point2D, Int>
@@ -14,37 +13,28 @@ internal object Resources {
     fun resourceAsString(fileName: String, delimiter: String = ""): String =
         resourceAsList(fileName).reduce { a, b -> "$a$delimiter$b" }
 
-    fun resourceAsText(fileName: String): String =
-        File(fileName.toURI()).readText()
+    fun resourceAsText(fileName: String): String = File(fileName.toResourcePath()).readText()
 
-    fun resourceAsList(fileName: String): List<String> =
-        File(fileName.toURI()).readLines()
+    fun resourceAsList(fileName: String): List<String> = File(fileName.toResourcePath()).readLines()
 
-    fun resourceAsListOfInt(fileName: String): List<Int> =
-        resourceAsList(fileName).map(String::toInt)
+    fun resourceAsListOfInt(fileName: String): List<Int> = resourceAsList(fileName).map(String::toInt)
 
-    fun resourceAsListOfListOfInt(fileName: String, separator : String = " "): List<List<Int>> =
+    fun resourceAsListOfListOfInt(fileName: String, separator: String = " "): List<List<Int>> =
         resourceAsList(fileName).map { line ->
-            line.split(separator)
-                .filterNot(String::isEmpty)
-                .map(String::toInt)
+            line.split(separator).filterNot(String::isEmpty).map(String::toInt)
         }
 
-    fun resourceAsListOfLong(fileName: String): List<Long> =
-        resourceAsList(fileName).map(String::toLong)
+    fun resourceAsListOfLong(fileName: String): List<Long> = resourceAsList(fileName).map(String::toLong)
 
-    fun resourceAsListOfListOfLong(fileName: String, separator : String = " "): List<List<Long>> =
+    fun resourceAsListOfListOfLong(fileName: String, separator: String = " "): List<List<Long>> =
         resourceAsList(fileName).map { line ->
-            line.split(separator)
-                .filterNot(String::isEmpty)
-                .map(String::toLong)
+            line.split(separator).filterNot(String::isEmpty).map(String::toLong)
         }
 
-    fun resourceAsListOfString(fileName: String): List<String> =
-        File(fileName.toURI()).readLines()
+    fun resourceAsListOfString(fileName: String): List<String> = File(fileName.toResourcePath()).readLines()
 
     fun resourceAsPoint2DBooleanMap(fileName: String): Point2DBooleanMap {
-        val input = File(fileName.toURI()).readLines()
+        val input = File(fileName.toResourcePath()).readLines()
 
         return input.flatMapIndexed { y, row ->
             row.mapIndexed { x, point ->
@@ -54,7 +44,7 @@ internal object Resources {
     }
 
     fun resourceAsPoint2DIntMap(fileName: String): Point2DIntMap {
-        val input = File(fileName.toURI()).readLines()
+        val input = File(fileName.toResourcePath()).readLines()
 
         return input.flatMapIndexed { y, row ->
             row.mapIndexed { x, point ->
@@ -64,7 +54,7 @@ internal object Resources {
     }
 
     fun resourceAsArrayOfIntArray(fileName: String): Array<IntArray> {
-        val input = File(fileName.toURI()).readLines()
+        val input = File(fileName.toResourcePath()).readLines()
 
         return input.map { row ->
             row.map { digit ->
@@ -74,7 +64,7 @@ internal object Resources {
     }
 
     fun resourceAsArrayOfCharArray(fileName: String): Array<CharArray> {
-        val input = File(fileName.toURI()).readLines()
+        val input = File(fileName.toResourcePath()).readLines()
 
         return input.map { row ->
             row.map { digit ->
@@ -83,7 +73,5 @@ internal object Resources {
         }.toTypedArray()
     }
 
-    private fun String.toURI(): URI =
-        Resources.javaClass.classLoader.getResource(this)?.toURI()
-            ?: throw IllegalArgumentException("Cannot find Resource: $this")
+    fun String.toResourcePath(): String = "src/main/resources/$this"
 }

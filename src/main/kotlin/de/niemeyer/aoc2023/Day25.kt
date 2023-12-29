@@ -33,6 +33,7 @@ fun main() {
     }
 
     val name = getClassName()
+    assertDayFile(fileName = "${name}.txt")
     val testInput = resourceAsList(fileName = "${name}_test.txt")
     val puzzleInput = resourceAsList(fileName = "${name}.txt")
 

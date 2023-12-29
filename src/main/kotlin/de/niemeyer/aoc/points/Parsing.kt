@@ -6,21 +6,21 @@ fun parsePoint2dMapTopLeft(input: String): Map<Point2D, Boolean> =
     parsePoint2dMapTopLeft(input.lines())
 
 fun parsePoint2dMapTopLeft(input: List<String>): Map<Point2D, Boolean> {
-    val rowProg = 0 until input.size step 1
-    return parsePoint2dMap(input, rowProg)
+    val rowProgression = input.indices step 1
+    return parsePoint2dMap(input, rowProgression)
 }
 
 fun parsePoint2dMapBottomLeft(input: String): Map<Point2D, Boolean> =
     parsePoint2dMapBottomLeft(input.lines())
 
 fun parsePoint2dMapBottomLeft(input: List<String>): Map<Point2D, Boolean> {
-    val rowProg = (input.size - 1) downTo 0
-    return parsePoint2dMap(input, rowProg)
+    val rowProgression = (input.size - 1) downTo 0
+    return parsePoint2dMap(input, rowProgression)
 }
 
-fun parsePoint2dMap(input: List<String>, rowProg: IntProgression): Map<Point2D, Boolean> =
+fun parsePoint2dMap(input: List<String>, rowProgression: IntProgression): Map<Point2D, Boolean> =
     buildMap {
-        rowProg.forEach { y ->
+        rowProgression.forEach { y ->
             input[y].forEachIndexed { x, c ->
                 if (c == '#' || c == '.') {
                     put(Point2D(x, y), c == '#')
@@ -35,22 +35,22 @@ fun parsePoint2dSetTopLeft(input: String): Set<Point2D> =
     parsePoint2dSetTopLeft(input.lines())
 
 fun parsePoint2dSetTopLeft(input: List<String>): Set<Point2D> {
-    val rowProg = 0 until input.size step 1
+    val rowProgression = input.indices step 1
 
-    return parsePoint2dSet(input, rowProg)
+    return parsePoint2dSet(input, rowProgression)
 }
 
 fun parsePoint2dSetBottomLeft(input: String): Set<Point2D> =
     parsePoint2dSetBottomLeft(input.lines())
 
 fun parsePoint2dSetBottomLeft(input: List<String>): Set<Point2D> {
-    val rowProg = (input.size - 1) downTo 0
-    return parsePoint2dSet(input, rowProg)
+    val rowProgression = (input.size - 1) downTo 0
+    return parsePoint2dSet(input, rowProgression)
 }
 
-fun parsePoint2dSet(input: List<String>, rowProg: IntProgression, relevantChar: Char = '#'): Set<Point2D> =
+fun parsePoint2dSet(input: List<String>, rowProgression: IntProgression, relevantChar: Char = '#'): Set<Point2D> =
     buildSet {
-        rowProg.forEachIndexed { y, lineIdx ->
+        rowProgression.forEachIndexed { y, lineIdx ->
             input[lineIdx].mapIndexedNotNull { x, c ->
                 if (c == relevantChar) add(Point2D(x, y))
             }

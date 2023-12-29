@@ -21,7 +21,7 @@ data class Point2D(val x: Int, val y: Int) : Point {
     }
 
     val axisNeighbors: List<Point2D> by lazy {
-        listOf(Point2D(0, 1), Point2D(1, 0),Point2D(0, -1),Point2D(-1, 0)).map { this + it }
+        listOf(Point2D(0, 1), Point2D(1, 0), Point2D(0, -1), Point2D(-1, 0)).map { this + it }
     }
 
     infix fun sharesAxisWith(that: Point2D): Boolean = x == that.x || y == that.y
@@ -39,11 +39,9 @@ data class Point2D(val x: Int, val y: Int) : Point {
     fun moveTimes(compassDirectionCCS: CompassDirectionCCS, offset: Int): Point2D =
         this + compassDirectionCCS.offset * offset
 
-    fun moveTimes(directionCCS: DirectionCCS, offset: Int): Point2D =
-        this + directionCCS.offset * offset
+    fun moveTimes(directionCCS: DirectionCCS, offset: Int): Point2D = this + directionCCS.offset * offset
 
-    fun moveTimes(directionScreen: DirectionScreen, offset: Int): Point2D =
-        this + directionScreen.offset * offset
+    fun moveTimes(directionScreen: DirectionScreen, offset: Int): Point2D = this + directionScreen.offset * offset
 
     fun rotateLeft(): Point2D = rotate(90)
 

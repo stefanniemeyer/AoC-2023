@@ -29,22 +29,20 @@ fun Set<Point2D>.printBottomLeft() =
 fun Set<Point2D>.toStringWithOrientation(orientationTopLeft: Boolean = true): String {
     val yMin = this.minOf { it.y }
     val yMax = this.maxOf { it.y }
-
-    val yProg: IntProgression
-    if (orientationTopLeft == true) {
-        yProg = yMin..yMax
+    val yProgression: IntProgression = if (orientationTopLeft) {
+        yMin..yMax
     } else {
-        yProg = yMax downTo yMin
+        yMax downTo yMin
     }
-    return toPrintableString(yProg)
+    return toPrintableString(yProgression)
 }
 
-fun Set<Point2D>.toPrintableString(yProg: IntProgression): String {
+fun Set<Point2D>.toPrintableString(yProgression: IntProgression): String {
     val xMin = this.minOf { it.x }
     val xMax = this.maxOf { it.x }
 
     return buildString {
-        yProg.forEach { y ->
+        yProgression.forEach { y ->
             for (x in xMin..xMax) {
                 append(if (contains(Point2D(x, y))) '#' else '.')
             }
